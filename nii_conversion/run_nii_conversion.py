@@ -54,7 +54,7 @@ for ses in ses_id_list:
     search_dir = os.path.join(raw_dir, ses, in_ses_folder)
     os.chdir(search_dir)
     raw_subjects_list += sorted(glob.glob("lhab*"))
-old_subject_id_list = list(set([s[:9] for s in raw_subjects_list]))
+old_subject_id_list = sorted(list(set([s[:9] for s in raw_subjects_list])))
 
 # FIXME
 old_subject_id_list = old_subject_id_list[:2] + ["lhab_1cfy"]
