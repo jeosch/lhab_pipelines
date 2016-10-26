@@ -123,6 +123,10 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
                 np.savetxt(bvecs_file, rotated_bvecs_las.T, fmt="%.5f")
                 add_info_to_json(bids_file, {"bvecs_info": "rotated for angulation and in LAS space"})
 
+                # remove _dwi_ADC.nii.gz file created by dcm2niix
+                adc_file = glob.glob(os.path.join(nii_output_dir, "*_dwi_ADC.nii.gz"))[0]
+                os.remove(adc_file)
+
             # add task and number of volumes to json file for rest
             if task:
                 add_info_to_json(bids_file, {"TaskName": task})
