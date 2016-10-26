@@ -34,7 +34,7 @@ bvecs_from_scanner_file = os.path.join(raw_dir, "00_bvecs/bvecs.fromscanner")
 
 info_list = [
     # {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_"},
-    {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_"},
+    # {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_"},
     {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True},
     # {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest"},
     # {"bids_name": "bold", "bids_modality": "fmap", "search_str": "_fmri_pa_T", "direction": "ap"},
