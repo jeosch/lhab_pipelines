@@ -53,7 +53,7 @@ raw_subjects_list = []
 for ses in ses_id_list:
     search_dir = os.path.join(raw_dir, ses, in_ses_folder)
     os.chdir(search_dir)
-    raw_subjects_list += glob.glob("lhab*")
+    raw_subjects_list += sorted(glob.glob("lhab*"))
 old_subject_id_list = list(set([s[:9] for s in raw_subjects_list]))
 
 # FIXME
@@ -65,7 +65,7 @@ for old_ses_id in ses_id_list:
     for old_subject_id in old_subject_id_list:
         subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
         os.chdir(subject_ses_folder)
-        subject_folder = glob.glob(old_subject_id + "*")
+        subject_folder = sorted(glob.glob(old_subject_id + "*"))
         assert len(subject_folder) < 2, "more than one subject folder %s" % old_subject_id
 
         if subject_folder:
