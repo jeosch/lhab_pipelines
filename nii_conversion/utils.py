@@ -120,7 +120,7 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
                 rotated_bvecs_ras = rotate_bvecs(bvecs_from_scanner, par_file)
                 rotated_bvecs_las = rotated_bvecs_ras.copy()
                 rotated_bvecs_las[0] *= -1
-                np.savetxt(bvecs_file, rotated_bvecs_las, fmt="%.5f")
+                np.savetxt(bvecs_file, rotated_bvecs_las.T, fmt="%.5f")
                 add_info_to_json(bids_file, {"bvecs_info": "rotated for angulation and in LAS space"})
 
             # add task and number of volumes to json file for rest
