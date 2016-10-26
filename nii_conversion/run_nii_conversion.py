@@ -56,8 +56,6 @@ for ses in ses_id_list:
     raw_subjects_list += sorted(glob.glob("lhab*"))
 old_subject_id_list = sorted(list(set([s[:9] for s in raw_subjects_list])))
 
-# FIXME
-old_subject_id_list = old_subject_id_list[:2] + ["lhab_1cfy"]
 
 for old_ses_id in ses_id_list:
     new_ses_id = get_new_ses_id(old_ses_id)
