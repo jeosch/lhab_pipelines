@@ -15,12 +15,12 @@ ses_id_list = ["T1", "T2", "T3"]
 in_ses_folder = "01_noIF"
 
 info_list = [
-    {"seq_name": "T1w", "bids_modality": "anat", "search_str": "T1w"},
-    {"seq_name": "FLAIR", "bids_modality": "anat", "search_str": "FLAIR"},
+    # {"seq_name": "T1w", "bids_modality": "anat", "search_str": "T1w"},
+    # {"seq_name": "FLAIR", "bids_modality": "anat", "search_str": "FLAIR"},
     {"seq_name": "dwi", "bids_modality": "dwi", "search_str": "dwi"},
-    {"seq_name": "bold", "bids_modality": "func", "search_str": "bold"},
-    {"seq_name": "fmap_bold", "bids_modality": "fmap", "search_str": "bold"},
-    {"seq_name": "fmap_dwi", "bids_modality": "fmap", "search_str": "dwi"},
+    # {"seq_name": "bold", "bids_modality": "func", "search_str": "bold"},
+    # {"seq_name": "fmap_bold", "bids_modality": "fmap", "search_str": "bold"},
+    # {"seq_name": "fmap_dwi", "bids_modality": "fmap", "search_str": "dwi"},
 ]
 
 
