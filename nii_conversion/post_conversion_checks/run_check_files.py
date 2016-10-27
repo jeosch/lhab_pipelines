@@ -59,7 +59,7 @@ for sub_id in subjects_list:
 
         df = df.append(pd.DataFrame(n_files))  # , ignore_index=True)
 
-df = df[["sub_id", "ses_id", "dwi" ]#"T1w", "bold", "dwi", "fmap_bold", "fmap_dwi", "FLAIR"]]
+df = df[["sub_id", "ses_id", "dwi" ]]#"T1w", "bold", "dwi", "fmap_bold", "fmap_dwi", "FLAIR"]]
 
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)
