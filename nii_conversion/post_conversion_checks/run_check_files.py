@@ -1,3 +1,16 @@
+# import pandas as pd
+# def read_tsv(filename):
+#     return pd.read_csv(filename, sep="\t")
+#
+# df=read_tsv("checks/n_files.tsv")
+#
+# g = df.groupby("sub_id")
+# n_dwis = g.sum()
+# df=df.set_index(df.sub_id)
+# df_o=df[["ses_id", "dwi"]].pivot(columns="ses_id")
+# df_o.to_excel("/Users/franzliem/Desktop/lhab_dwi_missing.xlsx")
+
+
 import os
 import glob
 import pandas as pd

@@ -236,29 +236,6 @@ def rotate_vectors(directions, ap, fh, rl, orient):
     return directions
 
 
-def rotate_bvecs_angulation_tests():
-    import numpy as np
-    from numpy.testing import assert_almost_equal
-
-    bvecs_from_scanner = np.genfromtxt("test_data/bvecs.fromscanner")
-    # test that with ang 0 leads to desired bvecs (compare with philipps)
-    # test that angulation leads to desire bvecs (compare with philipps)
-    test_list = [
-        ("test_data/dwi/dwi.par", "test_data/dwi/dwi.bvec"),
-        ("test_data/dwi_rot/dwi_rot.par", "test_data/dwi_rot/dwi_rot.bvec"),
-    ]
-    for par_file, goal_bvec_file in test_list:
-        goal_bvecs = np.genfromtxt(goal_bvec_file)
-        print(par_file, goal_bvec_file)
-        rotated_bvecs = rotate_bvecs(bvecs_from_scanner, par_file)
-        assert_almost_equal(rotated_bvecs, goal_bvecs, 5)
-
-    # fail test
-    par_file, goal_bvec_file = ("test_data/dwi/dwi.par", "test_data/dwi_rot/dwi_rot.bvec")
-    goal_bvecs = np.genfromtxt(goal_bvec_file)
-    rotated_bvecs = rotate_bvecs(bvecs_from_scanner, par_file)
-    diff = np.abs((rotated_bvecs - goal_bvecs).sum())
-    assert (diff > 0.1)
 
 
 ####
