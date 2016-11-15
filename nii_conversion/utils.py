@@ -13,10 +13,11 @@ from nipype.interfaces.fsl import Reorient2Std
 
 
 def run_conversions(old_subject_id, old_ses_id, abs_subject_folder, output_dir, info_list,
-                    bvecs_from_scanner_file=None):
+                    bvecs_from_scanner_file=None, face_dir=None):
     os.chdir(abs_subject_folder)
     for infodict in info_list:
-        convert_modality(old_subject_id, old_ses_id, output_dir, bvecs_from_scanner_file=bvecs_from_scanner_file, **infodict)
+        convert_modality(old_subject_id, old_ses_id, output_dir, bvecs_from_scanner_file=bvecs_from_scanner_file,
+                         face_dir=face_dir, **infodict)
 
 
 def to_tsv(df, filename):
@@ -61,7 +62,8 @@ def add_additional_bids_parameters_from_par(par_file, bids_file, parameters={"an
 
 
 def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_modality,
-                     search_str, bvecs_from_scanner_file=None, reorient2std=True, task=None, direction=None, only_use_last=False):
+                     search_str, bvecs_from_scanner_file=None, face_dir=None, reorient2std=True, task=None, direction=None,
+                     only_use_last=False, deface=False):
     new_ses_id = get_new_ses_id(old_ses_id)
     bids_sub = "sub-" + get_new_subject_id(old_subject_id)
     bids_ses = "ses-" + new_ses_id
@@ -136,6 +138,13 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
                 reorient.inputs.in_file = converter_results.outputs.converted_files
                 reorient.inputs.out_file = converter_results.outputs.converted_files
                 reorient_results = reorient.run()
+
+            if deface:
+                tal_file = os.path.join(face_dir, "talairach_mixed_with_skull.gca")
+                face_file = os.path.join(face_dir, "face.gca")
+                cmd = "mri_deface {in_file} {tal_file} {face_file} {in_file}".format(
+                    in_file=nii_file, tal_file=tal_file, face_file=face_file)
+
             update_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file)
 
 

@@ -2,12 +2,8 @@ import os
 from glob import glob
 import shutil
 
-data_dir = os.getenv("LHAB_DIR")
-if not data_dir:
-    raise Exception("env LHAB_DIR not set")
-
-fs_base_dir = os.path.join(data_dir, "00_Data/4ScienceCloud/Freesurfer/data_all_results/data_all/")
-bids_fs_target_dir = os.path.join(data_dir, "00_Data/4Franz/tracula_bids_in_data/freesurfer")
+fs_base_dir = "/Volumes/lhab_secure/02_LHAB/00_Data/4ScienceCloud/Freesurfer/data_all_results/data_all/"
+bids_fs_target_dir = "/Volumes/lhab_secure/02_LHAB/00_Data/4Franz/tracula_bids_in_data/freesurfer"
 
 if os.path.exists(bids_fs_target_dir):
     shutil.rmtree(bids_fs_target_dir)
