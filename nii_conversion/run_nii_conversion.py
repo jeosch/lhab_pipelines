@@ -24,7 +24,6 @@ import glob
 
 from .utils import get_new_ses_id, run_conversions
 
-
 base_dir = "/data/"
 raw_dir = os.path.join(base_dir, "raw")
 output_dir = os.path.join(base_dir, "nifti")
@@ -37,14 +36,12 @@ bvecs_from_scanner_file = os.path.join(raw_dir, "00_bvecs/bvecs.fromscanner")
 info_list = [
     {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True},
     # {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_"},
-    #{"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True},
+    # {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True},
     # {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest"},
     # {"bids_name": "bold", "bids_modality": "fmap", "search_str": "_fmri_pa_T", "direction": "ap"},
     # {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_pa_T", "direction": "pa"},
     # {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "direction": "ap"}
 ]
-
-
 
 #
 if not os.path.exists(output_dir):
@@ -58,6 +55,8 @@ for ses in ses_id_list:
     raw_subjects_list += sorted(glob.glob("lhab*"))
 old_subject_id_list = sorted(list(set([s[:9] for s in raw_subjects_list])))
 
+# fixme
+old_subject_id_list = old_subject_id_list[:2]
 
 for old_ses_id in ses_id_list:
     new_ses_id = get_new_ses_id(old_ses_id)
