@@ -1,0 +1,2 @@
+export PATH=/usr/local/miniconda/bin:$PATH
+export PYTHONPATH=/code/lhab_pipelines

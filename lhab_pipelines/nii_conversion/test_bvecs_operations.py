@@ -1,7 +1,7 @@
 import os
 
 from . import utils
-from .utils import rotate_bvecs
+from lhab_pipelines.nii_conversion import rotate_bvecs
 
 data_path = os.path.join(os.path.dirname(utils.__file__), 'test_data')
 

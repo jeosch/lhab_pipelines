@@ -18,16 +18,18 @@ TODO:
 -slice timing
 
 """
+n_jobs = 1
 
 import os
 import glob
+from joblib import Parallel, delayed
 
-from lhab_pipelines.nii_conversion.utils import get_new_ses_id, run_conversions
+from lhab_pipelines.nii_conversion.conversion import run_conversions
 
 base_dir = "/data/"
 raw_dir = os.path.join(base_dir, "raw")
 output_dir = os.path.join(base_dir, "nifti")
-face_dir = os.path.join(raw_dir, "face")
+face_dir = os.path.join(raw_dir, "00_face")
 
 ses_id_list = ["T1", "T2", "T3"]
 in_ses_folder = "01_noIF"
@@ -60,10 +62,9 @@ old_subject_id_list = sorted(list(set([s[:9] for s in raw_subjects_list])))
 # fixme
 old_subject_id_list = old_subject_id_list[:2]
 
-for old_ses_id in ses_id_list:
-    new_ses_id = get_new_ses_id(old_ses_id)
 
-    for old_subject_id in old_subject_id_list:
+def submit_subject(old_subject_id):
+    for old_ses_id in ses_id_list:
         subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
         os.chdir(subject_ses_folder)
         subject_folder = sorted(glob.glob(old_subject_id + "*"))
@@ -78,3 +79,6 @@ for old_ses_id in ses_id_list:
                             public_output=True,
                             face_dir=face_dir,
                             new_id_lut_file=new_id_lut_file)
+
+
+Parallel(n_jobs=n_jobs)(delayed(submit_subject)(old_subject_id) for old_subject_id in old_subject_id_list)
