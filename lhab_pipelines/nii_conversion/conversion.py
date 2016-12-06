@@ -6,7 +6,7 @@ from nipype.interfaces.fsl import Reorient2Std
 
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
     add_additional_bids_parameters_from_par, add_info_to_json, update_scans_file, deface_data, dwi_rotate_bvecs
-from ..utils import get_docker_container_id
+from ..utils import get_docker_container_name
 
 def run_conversions(old_subject_id, old_ses_id, abs_subject_folder, output_dir, info_list,
                     bvecs_from_scanner_file=None, public_output=False, face_dir=None, new_id_lut_file=None):
@@ -112,8 +112,8 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
                 deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename)
 
             try:
-                docker_container_id = get_docker_container_id()
-                add_info_to_json(bids_file, {"conversion_docker_container_id": docker_container_id})
+                docker_container_name = get_docker_container_name()
+                add_info_to_json(bids_file, {"conversion_docker_container_name": docker_container_name})
             except:
                 pass
 
