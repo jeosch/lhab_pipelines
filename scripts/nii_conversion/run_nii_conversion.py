@@ -18,7 +18,7 @@ TODO:
 -slice timing
 
 """
-n_jobs = 1
+n_jobs = -1
 
 import os
 import glob
