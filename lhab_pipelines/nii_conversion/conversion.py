@@ -120,7 +120,8 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             # dcm2niix version
             v = converter.version_from_command()
             v_start = v.find(b"version ") + 8
-            add_info_to_json(bids_file, {"conversion_dcm2niix_version": v[v_start:v_start + 10]})
+            dcm2niix_version = v[v_start:v_start + 10].decode("utf-8")
+            add_info_to_json(bids_file, {"conversion_dcm2niix_version": dcm2niix_version})
 
             update_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file)
 
