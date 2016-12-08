@@ -54,7 +54,7 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             par_file_list = par_file_list[-1:]
 
         for run_id, par_file in enumerate(par_file_list, 1):
-            # fixme bug in dcm2niix requires capital letter extension .PAR .REC
+            # fixme bug in dcm2niix requires capital letter extension .PAR .REC (Linux only)
             # abs_par_file = os.path.abspath(par_file)
             # abs_rec_file = os.path.splitext(abs_par_file)[0] + ".rec"
             parrec_name = os.path.splitext(os.path.abspath(par_file))[0]
@@ -62,8 +62,17 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             abs_rec_file_orig = parrec_name + ".rec"
             abs_par_file = parrec_name + ".PAR"
             abs_rec_file = parrec_name + ".REC"
-            os.symlink(abs_par_file_orig, abs_par_file)
-            os.symlink(abs_rec_file_orig, abs_rec_file)
+
+            # try symling; this does not work in macos hosts, where par PAR is not an issue
+            try:
+                os.symlink(abs_par_file_orig, abs_par_file)
+            except FileExistsError:
+                abs_par_file = os.path.abspath(par_file)
+
+            try:
+                os.symlink(abs_rec_file_orig, abs_rec_file)
+            except:
+                abs_rec_file = os.path.splitext(abs_par_file)[0] + ".rec"
             ##
 
             assert os.path.exists(abs_rec_file), "REC file does not exist %s" % abs_rec_file
