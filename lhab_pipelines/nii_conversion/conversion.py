@@ -77,6 +77,8 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             converter.inputs.has_private = True
             converter.inputs.out_filename = out_filename
             converter.inputs.output_dir = nii_output_dir
+            print("XXXXXXX")
+            print(converter.cmdline)
             converter_results = converter.run()
             bids_file = converter_results.outputs.bids
 
