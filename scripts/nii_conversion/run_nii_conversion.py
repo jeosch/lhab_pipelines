@@ -59,8 +59,6 @@ for ses in ses_id_list:
     raw_subjects_list += sorted(glob.glob("lhab*"))
 old_subject_id_list = sorted(list(set([s[:9] for s in raw_subjects_list])))
 
-# fixme
-old_subject_id_list = old_subject_id_list[:2]
 
 
 def submit_subject(old_subject_id):
