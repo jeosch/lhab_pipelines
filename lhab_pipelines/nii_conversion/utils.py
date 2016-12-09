@@ -1,13 +1,12 @@
-#fixme imports
-import glob
+# fixme imports
+from glob import glob
 import os
 
 import nibabel as nb
 import numpy as np
 import pandas as pd
 
-from lhab_pipelines.utils import to_tsv, read_tsv, add_info_to_json
-
+from lhab_pipelines.utils import to_tsv, read_tsv, add_info_to_json, get_docker_container_name
 
 # subject and session id related
 def get_new_subject_id(old_subject_id):
@@ -34,7 +33,7 @@ def test_get_public_sub_id():
 def add_additional_bids_parameters_from_par(par_file, bids_file, parameters={"angulation": "Angulation"}):
     header_params = {}
     for param, param_label in parameters.items():
-        header_params[param_label] =get_par_info(par_file, param)[param]# out_parameter
+        header_params[param_label] = get_par_info(par_file, param)[param]  # out_parameter
     add_info_to_json(bids_file, header_params)
 
 
@@ -148,10 +147,15 @@ def deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename):
     os.chdir(old_wd)
 
 
-def dwi_rotate_bvecs(abs_par_file, bids_file, bvecs_from_scanner_file, nii_output_dir, par_file):
+# BVECS OPERATIONS
+def dwi_treat_bvecs(abs_par_file, bids_file, bvecs_from_scanner_file, nii_output_dir, par_file):
+    '''
+    replaces dcm2niix bvecs with rotated, own bvecs
+    adds angulation to json
+    '''
     add_additional_bids_parameters_from_par(abs_par_file, bids_file, {"angulation": "Angulation"})
     # remove dcm2niix bvecs and replace with own, rotated LAS bvecs
-    bvecs_file = glob.glob(os.path.join(nii_output_dir, "*.bvec"))[0]
+    bvecs_file = glob(os.path.join(nii_output_dir, "*.bvec"))[0]
     os.remove(bvecs_file)
     bvecs_from_scanner = np.genfromtxt(bvecs_from_scanner_file)
     rotated_bvecs_ras = rotate_bvecs(bvecs_from_scanner, par_file)
@@ -241,3 +245,4 @@ def rotate_vectors(directions, ap, fh, rl, orient):
     directions[:, 1] *= -1
 
     return directions
+
