@@ -9,6 +9,7 @@ new_id style: lhabX0001
 import os
 import glob, random
 import pandas as pd
+import datetime as dt
 from lhab_pipelines.utils import to_tsv
 
 base_dir = "/data/"
@@ -42,7 +43,6 @@ print("All-subject list written to %s" % all_sub_file)
 os.chmod(all_sub_file, 0o444)
 print("Permission of %s set to read only\n" % all_sub_file)
 
-
 # create new ids
 new_id = []
 for i in range(1, 1000):
@@ -69,5 +69,10 @@ print("Subject ID LUT written to %s" % out_filename)
 
 os.chmod(out_filename, 0o444)
 print("Permission of %s set to read only\n" % out_filename)
+
+info_file = os.path.join(output_dir, "info.txt")
+with open(info_file, "a") as fi:
+    fi.write("%s Subject lists created." % dt.datetime.now())
+os.chmod(info_file, 0o444)
 
 print("MOVE TO RAW FOLDER MANUALLY")
