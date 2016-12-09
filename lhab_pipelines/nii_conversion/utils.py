@@ -265,7 +265,7 @@ def export_demos(demo_df, sub_output_dir, bids_sub, bids_ses, par_file):
     acq_time = pd.to_datetime(general_info["exam_date"], format="%Y.%m.%d / %H:%M:%S")
     dob = pd.to_datetime(demo_df["dob"], format="%Y-%m-%d")
 
-    age = "{0:.1f}".format((acq_time - dob).days / 365.)
+    age = "{0:.1f}".format((acq_time - dob).days / 365.25)
     sex = demo_df["sex"]
     participant_file = os.path.join(sub_output_dir, bids_sub + "_participant.tsv")
     df_ = pd.DataFrame({"subject_id": [bids_sub], "session_id": [bids_ses], "age": [age], "sex": sex},
