@@ -25,6 +25,7 @@ import glob
 from joblib import Parallel, delayed
 
 from lhab_pipelines.nii_conversion.conversion import run_conversions
+from lhab_pipelines.utils import read_tsv
 
 base_dir = "/data/"
 raw_dir = os.path.join(base_dir, "raw")
@@ -34,11 +35,12 @@ face_dir = os.path.join(raw_dir, "00_face")
 ses_id_list = ["T1", "T2", "T3"]
 in_ses_folder = "01_noIF"
 bvecs_from_scanner_file = os.path.join(raw_dir, "00_bvecs/bvecs.fromscanner")
-new_id_lut_file= os.path.join(raw_dir, "00_sub_id_lut/new_sub_id_lut.tsv")
+all_sub_file= os.path.join(raw_dir, "00_PRIVATE_sub_lists/lhab_all_subjects.tsv")
+new_id_lut_file= os.path.join(raw_dir, "00_PRIVATE_sub_lists/new_sub_id_lut.tsv")
 
 
 info_list = [
-    {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True},
+    {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": False},
     # {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_"},
     # {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True},
     # {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest"},
@@ -52,13 +54,7 @@ if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
 # get subject list
-raw_subjects_list = []
-for ses in ses_id_list:
-    search_dir = os.path.join(raw_dir, ses, in_ses_folder)
-    os.chdir(search_dir)
-    raw_subjects_list += sorted(glob.glob("lhab*"))
-old_subject_id_list = sorted(list(set([s[:9] for s in raw_subjects_list])))
-
+old_subject_id_list = read_tsv(all_sub_file)["sub_id"].tolist()
 
 
 def submit_subject(old_subject_id):
