@@ -14,7 +14,8 @@
 import os
 import glob
 import pandas as pd
-from lhab_pipelines.nii_conversion.utils import to_tsv, get_json
+from lhab_pipelines.nii_conversion.utils import get_json
+from lhab_pipelines.utils import to_tsv, get_json
 
 orig_path = os.getcwd()
 base_dir = "/data/"

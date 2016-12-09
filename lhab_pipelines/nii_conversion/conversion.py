@@ -5,7 +5,8 @@ from nipype.interfaces.dcm2nii import Dcm2niix
 from nipype.interfaces.fsl import Reorient2Std
 
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
-    add_additional_bids_parameters_from_par, add_info_to_json, update_scans_file, deface_data, dwi_rotate_bvecs
+    add_additional_bids_parameters_from_par, update_scans_file, deface_data, dwi_rotate_bvecs
+from lhab_pipelines.utils import add_info_to_json
 from ..utils import get_docker_container_name
 
 def run_conversions(old_subject_id, old_ses_id, abs_subject_folder, output_dir, info_list,
