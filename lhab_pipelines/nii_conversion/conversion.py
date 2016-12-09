@@ -6,8 +6,8 @@ import pandas as pd
 
 from lhab_pipelines.utils import add_info_to_json
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
-    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par
-from ..utils import get_docker_container_name, read_tsv
+    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, export_demos
+from ..utils import get_docker_container_name, read_tsv, to_tsv
 
 from nipype.interfaces.dcm2nii import Dcm2niix
 from nipype.interfaces.fsl import Reorient2Std
@@ -25,7 +25,7 @@ def convert_subjects(old_sub_id_list,
                      use_new_ids=True,
                      face_dir=None,
                      new_id_lut_file=None,
-                     dob_file=None,
+                     demo_file=None,
                      n_jobs=-1):
     '''
     Parallelized submit call over subjects
@@ -53,13 +53,13 @@ def convert_subjects(old_sub_id_list,
                                        use_new_ids=use_new_ids,
                                        face_dir=face_dir,
                                        new_id_lut_file=new_id_lut_file,
-                                       dob_file=dob_file) for old_subject_id in
+                                       demo_file=demo_file) for old_subject_id in
         old_sub_id_list)
 
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,
                           bvecs_from_scanner_file=None, public_output=True, use_new_ids=True,
-                          face_dir=None, new_id_lut_file=None, dob_file=None):
+                          face_dir=None, new_id_lut_file=None, demo_file=None):
     """
     Loops through raw folders and identifies old_subject_id in tps.
     Pipes available tps into convert_modality
@@ -71,13 +71,12 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
 
     # get dob
     # FIXME
-    if dob_file:
-        dob_df = read_tsv(dob_file)
-        dob_df.set_index("sub_id", inplace=True)
-        pd.to_datetime(dob_df["dob"], format="%Y-%m-%d")
-        dob = dob_df.loc[old_subject_id, "dob"]
+    if demo_file:
+        demo_df = read_tsv(demo_file)
+        demo_df.set_index("sub_id", inplace=True)
+        demo_df = demo_df.loc[old_subject_id]
     else:
-        dob = None
+        demo_df = None
 
     for old_ses_id in ses_id_list:
         subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
@@ -95,12 +94,11 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
             else:
                 public_sub_id = None
 
-            # calculate dob
-
             for infodict in info_list:
                 convert_modality(old_subject_id,
                                  old_ses_id,
                                  output_dir,
+                                 demo_df=demo_df,
                                  bvecs_from_scanner_file=bvecs_from_scanner_file,
                                  public_sub_id=public_sub_id,
                                  public_output=public_output,
@@ -109,7 +107,8 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
 
 
 def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_modality,
-                     search_str, bvecs_from_scanner_file=None, public_sub_id=None, public_output=True, face_dir=None,
+                     search_str, demo_df=None, bvecs_from_scanner_file=None, public_sub_id=None, public_output=True,
+                     face_dir=None,
                      reorient2std=True, task=None, direction=None,
                      only_use_last=False, deface=False):
     """
@@ -127,7 +126,9 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
 
     par_file_list = glob("*" + search_str + "*.par")
     if par_file_list:
-        nii_output_dir = os.path.join(output_dir, bids_sub, bids_ses, bids_modality)
+        sub_output_dir = os.path.join(output_dir, bids_sub)
+        nii_output_dir = os.path.join(sub_output_dir, bids_ses, bids_modality)
+
         if not os.path.exists(nii_output_dir):
             os.makedirs(nii_output_dir)
 
@@ -135,6 +136,8 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             par_file_list = par_file_list[-1:]
 
         for run_id, par_file in enumerate(par_file_list, 1):
+            # export age and sex
+            export_demos(demo_df, sub_output_dir, bids_sub, bids_ses, par_file)
 
             # put together bids file name
             # bids run
