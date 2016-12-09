@@ -37,7 +37,13 @@ def add_additional_bids_parameters_from_par(par_file, bids_file, parameters={"an
     add_info_to_json(bids_file, header_params)
 
 
-def update_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file):
+def update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file, public_output=True):
+    """
+    one file per subject with
+    -ses id
+    -filename
+    -if not public: date of acquisition
+    """
     general_info, image_defs = read_par(par_file)
     acq_time = pd.to_datetime(general_info["exam_date"], format="%Y.%m.%d / %H:%M:%S")
 
@@ -49,7 +55,10 @@ def update_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filenam
     scans = scans.append(
         {"ses_id": bids_ses, "filename": bids_ses + "/" + bids_modality + "/" + out_filename + ".nii.gz",
          "acq_time": acq_time}, ignore_index=True)
-    scans = scans[["ses_id", "filename", "acq_time"]]
+    if not public_output:
+        scans = scans[["ses_id", "filename", "acq_time"]]
+    else:
+        scans = scans[["ses_id", "filename"]]
     to_tsv(scans, scans_file)
 
 
