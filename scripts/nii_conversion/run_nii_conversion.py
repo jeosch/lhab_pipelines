@@ -82,5 +82,6 @@ if __name__ == "__main__":
                      n_jobs=n_jobs)
 
     print("\n\n\n\nDONE.\nConverted %d subjects." % len(old_sub_id_list))
-    print("Did not convert the following subjects: %s "
+    print(old_sub_id_list)
+    print("\n\nDid not convert the following subjects: %s "
           "\nbecause they were in the exclude subjects list %s" % (exclude_sub_id_list, exclude_sub_file))
