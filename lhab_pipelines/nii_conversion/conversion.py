@@ -1,14 +1,17 @@
 import os
 from glob import glob
+import datetime as dt
 from joblib import Parallel, delayed
+import pandas as pd
 
 from lhab_pipelines.utils import add_info_to_json
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
-    update_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par
-from ..utils import get_docker_container_name
+    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par
+from ..utils import get_docker_container_name, read_tsv
 
 from nipype.interfaces.dcm2nii import Dcm2niix
 from nipype.interfaces.fsl import Reorient2Std
+import datetime as dt
 
 
 def convert_subjects(old_sub_id_list,
@@ -22,12 +25,22 @@ def convert_subjects(old_sub_id_list,
                      use_new_ids=True,
                      face_dir=None,
                      new_id_lut_file=None,
+                     dob_file=None,
                      n_jobs=-1):
     '''
     Parallelized submit call over subjects
     public_output: if True: strips all info about original subject_id, file, date
     use_new_ids: if True, uses new id from mapping file
     '''
+    info_file = os.path.join(output_dir, "..", "info.txt")
+    s = "\n%s" % dt.datetime.now()
+    s += "\npublic_output: %s" % public_output
+    s += "\nuse_new_ids: %s" % public_output
+    s += "\ninfo_list: %s" % info_list
+
+    with open(info_file, "a") as fi:
+        fi.write(s)
+
     Parallel(n_jobs=n_jobs)(
         delayed(submit_single_subject)(old_subject_id,
                                        ses_id_list,
@@ -39,13 +52,14 @@ def convert_subjects(old_sub_id_list,
                                        public_output=public_output,
                                        use_new_ids=use_new_ids,
                                        face_dir=face_dir,
-                                       new_id_lut_file=new_id_lut_file) for old_subject_id in
+                                       new_id_lut_file=new_id_lut_file,
+                                       dob_file=dob_file) for old_subject_id in
         old_sub_id_list)
 
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,
                           bvecs_from_scanner_file=None, public_output=True, use_new_ids=True,
-                          face_dir=None, new_id_lut_file=None):
+                          face_dir=None, new_id_lut_file=None, dob_file=None):
     """
     Loops through raw folders and identifies old_subject_id in tps.
     Pipes available tps into convert_modality
@@ -54,6 +68,16 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
     """
     if public_output:
         assert use_new_ids, "Public output requested, but retaining old subject ids; Doesn't sound good."
+
+    # get dob
+    # FIXME
+    if dob_file:
+        dob_df = read_tsv(dob_file)
+        dob_df.set_index("sub_id", inplace=True)
+        pd.to_datetime(dob_df["dob"], format="%Y-%m-%d")
+        dob = dob_df.loc[old_subject_id, "dob"]
+    else:
+        dob = None
 
     for old_ses_id in ses_id_list:
         subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
@@ -65,10 +89,14 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
             subject_folder = subject_folder[0]
             abs_subject_folder = os.path.abspath(subject_folder)
             os.chdir(abs_subject_folder)
+
             if use_new_ids:
                 public_sub_id = get_public_sub_id(old_subject_id, new_id_lut_file)
             else:
                 public_sub_id = None
+
+            # calculate dob
+
             for infodict in info_list:
                 convert_modality(old_subject_id,
                                  old_ses_id,
@@ -138,7 +166,11 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             if deface:
                 deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename)
 
-            update_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file)
+            update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file, public_output)
+
+            # finally as a sanity check, check that converted nii exists
+            assert os.path.exists(nii_file), "Something went wrong" \
+                                             "converted file does not exist. STOP. %s" % nii_file
 
 
 def run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file, nii_output_dir, out_filename, par_file,
@@ -202,6 +234,9 @@ def run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file, nii
     ## task
     if task:
         add_info_to_json(bids_file, {"TaskName": task})
+
+    ## time
+    add_info_to_json(bids_file, {"conversion_timestamp": str(dt.datetime.now())})
 
     if not public_output:
         # write par 2 nii mapping file only for private use
