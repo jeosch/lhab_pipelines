@@ -168,6 +168,7 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
 
             if deface:
                 deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename)
+            add_info_to_json(bids_file, {"defaced": deface})
 
             update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file, public_output)
 
