@@ -8,6 +8,7 @@ import pandas as pd
 
 from lhab_pipelines.utils import to_tsv, read_tsv, add_info_to_json, get_docker_container_name
 
+
 # subject and session id related
 def get_new_subject_id(old_subject_id):
     return old_subject_id[:4] + old_subject_id[5:]
@@ -53,12 +54,13 @@ def update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_fil
     else:
         scans = pd.DataFrame([])  # columns=["ses_id", "filename", "acq_time"])
     scans = scans.append(
-        {"ses_id": bids_ses, "filename": bids_ses + "/" + bids_modality + "/" + out_filename + ".nii.gz",
+        {"participant_id": bids_sub, "session_id": bids_ses,
+         "filename": bids_ses + "/" + bids_modality + "/" + out_filename + ".nii.gz",
          "acq_time": acq_time}, ignore_index=True)
     if not public_output:
-        scans = scans[["ses_id", "filename", "acq_time"]]
+        scans = scans[["participant_id", "session_id", "filename", "acq_time"]]
     else:
-        scans = scans[["ses_id", "filename"]]
+        scans = scans[["participant_id", "session_id", "filename"]]
     to_tsv(scans, scans_file)
 
 
@@ -268,8 +270,8 @@ def export_demos(demo_df, sub_output_dir, bids_sub, bids_ses, par_file):
     age = "{0:.1f}".format((acq_time - dob).days / 365.25)
     sex = demo_df["sex"]
     participant_file = os.path.join(sub_output_dir, bids_sub + "_participant.tsv")
-    df_ = pd.DataFrame({"subject_id": [bids_sub], "session_id": [bids_ses], "age": [age], "sex": sex},
-                       columns=["subject_id", "session_id", "age", "sex"])
+    df_ = pd.DataFrame({"participant_id": [bids_sub], "session_id": [bids_ses], "age": [age], "sex": sex},
+                       columns=["participant_id", "session_id", "age", "sex"])
     if os.path.exists(participant_file):
         participant_df = read_tsv(participant_file)
     else:
