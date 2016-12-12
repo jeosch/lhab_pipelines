@@ -1,5 +1,6 @@
 import json
 import os
+import warnings
 
 # docker stuff
 import pandas as pd
@@ -10,6 +11,15 @@ def get_docker_container_name():
     docker_container_name = os.getenv("DOCKER_IMAGE")
     return docker_container_name
 
+def check_docker_container_version(requested_v):
+    actual_v = get_docker_container_name()
+    if actual_v:
+        if not actual_v == requested_v:
+            raise RuntimeError("Requested docker version: %s, but running %s"%(requested_v, actual_v))
+        else:
+            print("Running docker: %s" %actual_v)
+    else:
+        warnings.warn("Not running in Docker env!")
 
 def to_tsv(df, filename):
     df.to_csv(filename, sep="\t", index=False)
