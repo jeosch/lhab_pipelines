@@ -39,7 +39,8 @@ if __name__ == "__main__":
     in_ses_folder = "01_noIF"
     bvecs_from_scanner_file = os.path.join(raw_dir, "00_bvecs/bvecs.fromscanner")
     all_sub_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/lhab_all_subjects.tsv")
-    exclude_sub_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/tp5_sub_exclude.tsv")
+    exclude_sub_file = None #os.path.join(raw_dir,
+    # "00_PRIVATE_sub_lists/tp5_sub_exclude.tsv")
     new_id_lut_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/new_sub_id_lut.tsv")
     demo_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/demos.tsv")
 
@@ -62,11 +63,11 @@ if __name__ == "__main__":
 
     try:
         exclude_sub_id_list = read_tsv(exclude_sub_file)["sub_id"].tolist()
+        for bad in exclude_sub_id_list:
+            old_sub_id_list.remove(bad)
+            print("Removed %s" % bad)
     except:
-        pass
-    for bad in exclude_sub_id_list:
-        old_sub_id_list.remove(bad)
-        print("Removed %s" % bad)
+        exclude_sub_id_list = "none"
 
     convert_subjects(old_sub_id_list,
                      ses_id_list,
