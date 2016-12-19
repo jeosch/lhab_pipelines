@@ -45,7 +45,7 @@ if __name__ == "__main__":
     demo_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/dob.zip")
 
     info_list = [
-        {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": False},
+        {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True},
         # {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_"},
         # {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True},
         # {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest"},
