@@ -56,9 +56,15 @@ for old_id in df.T:
             files = list(set([f.split(".")[0] for f in files]))
 
             assert len(files) < 3, "something went wrong %s" % files
-            for f in files:
+            abc = "abc"
+            for n, f in enumerate(files):
+                if len(files)>1:
+                    n_str = "_" + abc[n]
+                else:
+                    n_str = ""
+
                 for ext in ["par", "rec"]:
-                    new_filename = "lhab_{id}_{mod}_T4.{ext}".format(id=new_id, mod=m_new, ext=ext)
+                    new_filename = "lhab_{id}_{mod}{n_str}_T4.{ext}".format(id=new_id, mod=m_new, n_str=n_str, ext=ext)
                     print(f, new_filename)
                     cp_source = f + "." + ext
                     cp_dest = os.path.join(subject_target_folder, new_filename)
