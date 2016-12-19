@@ -4,7 +4,7 @@ import datetime as dt
 from joblib import Parallel, delayed
 import pandas as pd
 
-from lhab_pipelines.utils import add_info_to_json
+from lhab_pipelines.utils import add_info_to_json, read_protected_file
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
     update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, export_demos
 from ..utils import get_docker_container_name, read_tsv, to_tsv
@@ -26,6 +26,7 @@ def convert_subjects(old_sub_id_list,
                      face_dir=None,
                      new_id_lut_file=None,
                      demo_file=None,
+                     pwd=None,
                      n_jobs=-1):
     '''
     Parallelized submit call over subjects
@@ -53,13 +54,14 @@ def convert_subjects(old_sub_id_list,
                                        use_new_ids=use_new_ids,
                                        face_dir=face_dir,
                                        new_id_lut_file=new_id_lut_file,
-                                       demo_file=demo_file) for old_subject_id in
+                                       demo_file=demo_file,
+                                       pwd=pwd) for old_subject_id in
         old_sub_id_list)
 
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,
                           bvecs_from_scanner_file=None, public_output=True, use_new_ids=True,
-                          face_dir=None, new_id_lut_file=None, demo_file=None):
+                          face_dir=None, new_id_lut_file=None, demo_file=None, pwd=None):
     """
     Loops through raw folders and identifies old_subject_id in tps.
     Pipes available tps into convert_modality
@@ -72,8 +74,8 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
     # get dob
     # FIXME
     if demo_file:
-        demo_df = read_tsv(demo_file)
-        demo_df.set_index("sub_id", inplace=True)
+        assert pwd != "", "password empty"
+        demo_df = read_protected_file(demo_file, pwd, "demos.txt")
         demo_df = demo_df.loc[old_subject_id]
     else:
         demo_df = None
