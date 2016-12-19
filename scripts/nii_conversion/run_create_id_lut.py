@@ -15,9 +15,9 @@ from lhab_pipelines.utils import to_tsv
 base_dir = "/data/"
 raw_dir = os.path.join(base_dir, "raw")
 output_dir = os.path.join(base_dir, "nifti", "00_PRIVATE_sub_lists")
-face_dir = os.path.join(raw_dir, "face")
+face_dir = os.path.join(raw_dir, "00_face")
 
-ses_id_list = ["T1", "T2", "T3"]  # fixme , "T4", "T5"]
+ses_id_list = ["T1", "T2", "T3", "T4", "T5"]
 in_ses_folder = "01_noIF"
 
 #
