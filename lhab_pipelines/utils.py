@@ -5,21 +5,25 @@ import warnings
 # docker stuff
 import pandas as pd
 from bids.grabbids import BIDSLayout
+import zipfile
+from io import StringIO
 
 
 def get_docker_container_name():
     docker_container_name = os.getenv("DOCKER_IMAGE")
     return docker_container_name
 
+
 def check_docker_container_version(requested_v):
     actual_v = get_docker_container_name()
     if actual_v:
         if not actual_v == requested_v:
-            raise RuntimeError("Requested docker version: %s, but running %s"%(requested_v, actual_v))
+            raise RuntimeError("Requested docker version: %s, but running %s" % (requested_v, actual_v))
         else:
-            print("Running docker: %s" %actual_v)
+            print("Running docker: %s" % actual_v)
     else:
         warnings.warn("Not running in Docker env!")
+
 
 def to_tsv(df, filename):
     df.to_csv(filename, sep="\t", index=False)
@@ -38,7 +42,7 @@ def get_json(bids_file):
 def add_info_to_json(bids_file, new_info):
     import numpy
     bids_data = get_json(bids_file)
-    for k,v in new_info.items():
+    for k, v in new_info.items():
         if isinstance(v, numpy.ndarray):
             new_info[k] = v.tolist()
     bids_data.update(new_info)
@@ -57,3 +61,18 @@ def reduce_sub_files(bids_dir, output_file, sub_file):
         df = pd.concat((df, df_))
 
     to_tsv(df, os.path.join(bids_dir, output_file))
+
+
+def read_protected_file(zfile, pwd, datafile):
+    """
+    opens encrypted zipfile and reads table sep. datafile (txt)
+    returns a data frame
+    """
+    pwd = bytes(pwd, 'utf-8')
+    fi = zipfile.ZipFile(zfile)
+    data = fi.read(datafile, pwd=pwd)
+    data = data.decode()
+    fi.close()
+    df = pd.read_csv(StringIO(data), sep="\t")
+    df.set_index("subject_id", inplace=True)
+    return df
