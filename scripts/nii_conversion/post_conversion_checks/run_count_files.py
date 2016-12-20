@@ -49,5 +49,6 @@ for old_ses_id in ses_id_list:
 
 
 print("XXXXXXX\n bad subj\n")
-print(bad)
+for b in bad:
+    print(b)
 
