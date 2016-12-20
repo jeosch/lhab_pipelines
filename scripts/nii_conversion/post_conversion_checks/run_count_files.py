@@ -37,9 +37,9 @@ for old_ses_id in ses_id_list:
         print(new_sub_id, new_ses_id)
         for info in info_list:
             search_str = os.path.join(raw_dir, old_ses_id, in_ses_folder, old_sub_id + "_t%s_raw" % new_ses_id[-1],
-                                      "*" + info["search_str"] + "*")
+                                      "*" + info["search_str"] + "*.par")
             f = glob(search_str)
-            n_files_raw = len(f) / 2.
+            n_files_raw = len(f)
 
             search_str = os.path.join(nifti_dir, "sub-" + new_sub_id, "ses-" + new_ses_id, info["bids_modality"],
                                       "*" + info["bids_name"] + "*.nii.gz")
