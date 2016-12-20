@@ -195,14 +195,13 @@ def run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file, nii
     abs_rec_file = parrec_name + ".REC"
 
     # try symlink; this does not work in macos hosts, where par PAR is not an issue
+    on_linux = False
     try:
         os.symlink(abs_par_file_orig, abs_par_file)
+        os.symlink(abs_rec_file_orig, abs_rec_file)
+        on_linux = True
     except FileExistsError:
         abs_par_file = os.path.abspath(par_file)
-
-    try:
-        os.symlink(abs_rec_file_orig, abs_rec_file)
-    except:
         abs_rec_file = os.path.splitext(abs_par_file)[0] + ".rec"
 
     assert os.path.exists(abs_rec_file), "REC file does not exist %s" % abs_rec_file
@@ -258,5 +257,10 @@ def run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file, nii
         # remove _dwi_ADC.nii.gz file created by dcm2niix
         adc_file = glob(os.path.join(nii_output_dir, "*_dwi_ADC.nii.gz"))[0]
         os.remove(adc_file)
+
+    if on_linux:
+        os.remove(abs_par_file)
+        os.remove(abs_rec_file)
+
 
     return bids_file, converter_results
