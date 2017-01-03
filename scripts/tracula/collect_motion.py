@@ -39,7 +39,6 @@ for sub in subject_labels:
 for m in ['AvgTranslation', 'AvgRotation']:
         ql, med, qu = df[m].quantile(q=[.25,.5,.75])
         df["std_" + m] = (df[m] - med) / (qu - ql)
-df["AvgMotion"] = (df[['std_AvgTranslation', 'std_AvgRotation']])
 df["AvgMotion"] = df[['std_AvgTranslation', 'std_AvgRotation']].mean(1)
 
 
