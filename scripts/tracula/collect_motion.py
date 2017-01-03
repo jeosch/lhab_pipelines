@@ -31,4 +31,16 @@ for sub in subject_labels:
         df_["session"] = ses
         df = df.append(df_)
 
+
+# calculate mean motion based on standardized motion measures
+# inspired by Yendiki, A., Koldewyn, K., Kakunoori, S., Kanwisher, N., & Fischl, B. (2013).
+# http://doi.org/10.1016/j.neuroimage.2013.11.027
+# since 'PercentBadSlices' and 'AvgDropoutScore' show little variance, we only consider motion
+for m in ['AvgTranslation', 'AvgRotation']:
+        ql, med, qu = df[m].quantile(q=[.25,.5,.75])
+        df["std_" + m] = (df[m] - med) / (qu - ql)
+df["AvgMotion"] = (df[['std_AvgTranslation', 'std_AvgRotation']])
+df["AvgMotion"] = df[['std_AvgTranslation', 'std_AvgRotation']].mean(1)
+
+
 df.to_csv(os.path.join(out_path, "tracula_motion.txt"), sep="\t")
