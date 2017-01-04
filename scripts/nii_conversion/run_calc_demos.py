@@ -35,8 +35,7 @@ if __name__ == "__main__":
     in_ses_folder = "01_noIF"
     bvecs_from_scanner_file = os.path.join(raw_dir, "00_bvecs/bvecs.fromscanner")
     all_sub_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/lhab_all_subjects.tsv")
-    exclude_sub_file = None  # os.path.join(raw_dir,
-    # "00_PRIVATE_sub_lists/tp5_sub_exclude.tsv")
+    exclude_sub_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/strange_tp5_sub_exclude.tsv")
     new_id_lut_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/new_sub_id_lut.tsv")
     demo_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/dob.zip")
 
