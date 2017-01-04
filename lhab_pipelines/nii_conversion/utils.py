@@ -259,31 +259,6 @@ def rotate_vectors(directions, ap, fh, rl, orient):
     return directions
 
 
-# TODO delete function
-def export_demos(demo_df, sub_output_dir, bids_sub, bids_ses, par_file):
-    """
-    get sex and dob and calculate age (using acquisition time)
-    write into <bids_sub>/<bids_sub>_participatn.tsv
-    """
-    general_info, image_defs = read_par(par_file)
-    acq_time = pd.to_datetime(general_info["exam_date"], format="%Y.%m.%d / %H:%M:%S")
-    dob = pd.to_datetime(demo_df["dob"], format="%Y-%m-%d")
-
-    age = "{0:.1f}".format((acq_time - dob).days / 365.25)
-    sex = demo_df["sex"]
-    participant_file = os.path.join(sub_output_dir, bids_sub + "_participant.tsv")
-    df_ = pd.DataFrame({"participant_id": [bids_sub], "session_id": [bids_ses], "age": [age], "sex": sex},
-                       columns=["participant_id", "session_id", "age", "sex"])
-    if os.path.exists(participant_file):
-        participant_df = read_tsv(participant_file)
-    else:
-        participant_df = df_
-    if bids_ses not in participant_df["session_id"].values:
-        participant_df = pd.concat((participant_df, df_))
-    to_tsv(participant_df, participant_file)
-    return
-
-
 def fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file):
     """
     get sex and dob and calculate age (using acquisition time)
