@@ -11,6 +11,7 @@ from lhab_pipelines.utils import to_tsv, read_tsv, add_info_to_json, get_docker_
 
 # subject and session id related
 def get_new_subject_id(old_subject_id):
+    "lhab_1234 -> lhab1234"
     return old_subject_id[:4] + old_subject_id[5:]
 
 
@@ -258,6 +259,7 @@ def rotate_vectors(directions, ap, fh, rl, orient):
     return directions
 
 
+# TODO delete function
 def export_demos(demo_df, sub_output_dir, bids_sub, bids_ses, par_file):
     """
     get sex and dob and calculate age (using acquisition time)
@@ -282,3 +284,18 @@ def export_demos(demo_df, sub_output_dir, bids_sub, bids_ses, par_file):
     return
 
 
+def fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file):
+    """
+    get sex and dob and calculate age (using acquisition time)
+    returns df
+    """
+    demo_df = demo_df.loc[old_subject_id]
+    general_info, image_defs = read_par(par_file)
+    acq_time = pd.to_datetime(general_info["exam_date"], format="%Y.%m.%d / %H:%M:%S")
+    dob = pd.to_datetime(demo_df["dob"], format="%Y-%m-%d")
+
+    age = "{0:.1f}".format((acq_time - dob).days / 365.25)
+    sex = demo_df["sex"]
+    df = pd.DataFrame({"participant_id": [bids_sub], "session_id": [bids_ses], "age": [age], "sex": sex},
+                      columns=["participant_id", "session_id", "age", "sex"])
+    return df

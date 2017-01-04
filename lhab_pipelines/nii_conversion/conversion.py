@@ -6,7 +6,8 @@ import pandas as pd
 
 from lhab_pipelines.utils import add_info_to_json, read_protected_file
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
-    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, export_demos
+    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, export_demos, \
+    fetch_demos
 from ..utils import get_docker_container_name, read_tsv, to_tsv
 
 from nipype.interfaces.dcm2nii import Dcm2niix
@@ -36,7 +37,7 @@ def convert_subjects(old_sub_id_list,
     info_file = os.path.join(output_dir, "..", "info.txt")
     s = "\n%s" % dt.datetime.now()
     s += "\npublic_output: %s" % public_output
-    s += "\nuse_new_ids: %s" % public_output
+    s += "\nuse_new_ids: %s" % use_new_ids
     s += "\ninfo_list: %s" % info_list
 
     with open(info_file, "a") as fi:
@@ -57,6 +58,53 @@ def convert_subjects(old_sub_id_list,
                                        demo_file=demo_file,
                                        pwd=pwd) for old_subject_id in
         old_sub_id_list)
+
+
+def calc_demos(old_sub_id_list,
+               ses_id_list,
+               raw_dir,
+               in_ses_folder,
+               output_dir,
+               demo_file,
+               use_new_ids=True,
+               new_id_lut_file=None,
+               pwd=None,
+               ):
+    '''
+    Parallelized submit call over subjects
+    public_output: if True: strips all info about original subject_id, file, date
+    use_new_ids: if True, uses new id from mapping file
+    '''
+    assert pwd != "", "password empty"
+    demo_df = read_protected_file(demo_file, pwd, "demos.txt")
+
+    out_demo_df = pd.DataFrame([])
+    for old_subject_id in old_sub_id_list:
+        for old_ses_id in ses_id_list:
+            subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
+            os.chdir(subject_ses_folder)
+            subject_folder = sorted(glob(old_subject_id + "*"))
+            assert len(subject_folder) < 2, "more than one subject folder %s" % old_subject_id
+
+            if subject_folder:
+                subject_folder = subject_folder[0]
+                abs_subject_folder = os.path.abspath(subject_folder)
+                os.chdir(abs_subject_folder)
+
+                if use_new_ids:
+                    bids_sub = "sub-" + get_public_sub_id(old_subject_id, new_id_lut_file)
+                else:
+                    bids_sub = "sub-" + get_new_subject_id(old_subject_id)
+                bids_ses = "ses-" + get_new_ses_id(old_ses_id)
+
+                par_file_list = glob(os.path.join(abs_subject_folder, "*.par"))
+
+                if par_file_list:
+                    par_file = par_file_list[0]
+                    df_subject = fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file)
+                    out_demo_df = pd.concat((out_demo_df, df_subject))
+
+    to_tsv(out_demo_df, os.path.join(output_dir, "demos.tsv"))
 
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,
@@ -261,6 +309,5 @@ def run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file, nii
     if on_linux:
         os.remove(abs_par_file)
         os.remove(abs_rec_file)
-
 
     return bids_file, converter_results
