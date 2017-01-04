@@ -14,47 +14,6 @@ from nipype.interfaces.fsl import Reorient2Std
 import datetime as dt
 
 
-def convert_subjects(old_sub_id_list,
-                     ses_id_list,
-                     raw_dir,
-                     in_ses_folder,
-                     output_dir,
-                     info_list,
-                     bvecs_from_scanner_file=None,
-                     public_output=True,
-                     use_new_ids=True,
-                     face_dir=None,
-                     new_id_lut_file=None,
-                     n_jobs=-1):
-    '''
-    Parallelized submit call over subjects
-    public_output: if True: strips all info about original subject_id, file, date
-    use_new_ids: if True, uses new id from mapping file
-    '''
-    info_file = os.path.join(output_dir, "..", "info.txt")
-    s = "\n%s" % dt.datetime.now()
-    s += "\npublic_output: %s" % public_output
-    s += "\nuse_new_ids: %s" % use_new_ids
-    s += "\ninfo_list: %s" % info_list
-
-    with open(info_file, "a") as fi:
-        fi.write(s)
-
-    Parallel(n_jobs=n_jobs)(
-        delayed(submit_single_subject)(old_subject_id,
-                                       ses_id_list,
-                                       raw_dir,
-                                       in_ses_folder,
-                                       output_dir,
-                                       info_list,
-                                       bvecs_from_scanner_file=bvecs_from_scanner_file,
-                                       public_output=public_output,
-                                       use_new_ids=use_new_ids,
-                                       face_dir=face_dir,
-                                       new_id_lut_file=new_id_lut_file) for old_subject_id in
-        old_sub_id_list)
-
-
 def calc_demos(old_sub_id_list,
                ses_id_list,
                raw_dir,
