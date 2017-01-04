@@ -21,7 +21,6 @@ TODO:
 import os
 from lhab_pipelines.utils import read_tsv
 from lhab_pipelines.nii_conversion.conversion import convert_subjects
-import getpass
 
 if __name__ == "__main__":
     n_jobs = -1
@@ -42,7 +41,7 @@ if __name__ == "__main__":
     exclude_sub_file = None #os.path.join(raw_dir,
     # "00_PRIVATE_sub_lists/tp5_sub_exclude.tsv")
     new_id_lut_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/new_sub_id_lut.tsv")
-    demo_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/dob.zip")
+
 
     info_list = [
         {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True},
@@ -55,7 +54,6 @@ if __name__ == "__main__":
     ]
 
     #
-    pwd = getpass.getpass("Enter the Password for dob file:")
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -82,8 +80,6 @@ if __name__ == "__main__":
                      use_new_ids=use_new_ids,
                      face_dir=face_dir,
                      new_id_lut_file=new_id_lut_file,
-                     demo_file=demo_file,
-                     pwd=pwd,
                      n_jobs=n_jobs)
 
     print("\n\n\n\nDONE.\nConverted %d subjects." % len(old_sub_id_list))

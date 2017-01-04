@@ -6,8 +6,7 @@ import pandas as pd
 
 from lhab_pipelines.utils import add_info_to_json, read_protected_file
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
-    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, export_demos, \
-    fetch_demos
+    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, fetch_demos
 from ..utils import get_docker_container_name, read_tsv, to_tsv
 
 from nipype.interfaces.dcm2nii import Dcm2niix
@@ -26,8 +25,6 @@ def convert_subjects(old_sub_id_list,
                      use_new_ids=True,
                      face_dir=None,
                      new_id_lut_file=None,
-                     demo_file=None,
-                     pwd=None,
                      n_jobs=-1):
     '''
     Parallelized submit call over subjects
@@ -54,9 +51,7 @@ def convert_subjects(old_sub_id_list,
                                        public_output=public_output,
                                        use_new_ids=use_new_ids,
                                        face_dir=face_dir,
-                                       new_id_lut_file=new_id_lut_file,
-                                       demo_file=demo_file,
-                                       pwd=pwd) for old_subject_id in
+                                       new_id_lut_file=new_id_lut_file) for old_subject_id in
         old_sub_id_list)
 
 
@@ -109,7 +104,7 @@ def calc_demos(old_sub_id_list,
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,
                           bvecs_from_scanner_file=None, public_output=True, use_new_ids=True,
-                          face_dir=None, new_id_lut_file=None, demo_file=None, pwd=None):
+                          face_dir=None, new_id_lut_file=None):
     """
     Loops through raw folders and identifies old_subject_id in tps.
     Pipes available tps into convert_modality
@@ -118,15 +113,6 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
     """
     if public_output:
         assert use_new_ids, "Public output requested, but retaining old subject ids; Doesn't sound good."
-
-    # get dob
-    # FIXME
-    if demo_file:
-        assert pwd != "", "password empty"
-        demo_df = read_protected_file(demo_file, pwd, "demos.txt")
-        demo_df = demo_df.loc[old_subject_id]
-    else:
-        demo_df = None
 
     for old_ses_id in ses_id_list:
         subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
@@ -148,7 +134,6 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
                 convert_modality(old_subject_id,
                                  old_ses_id,
                                  output_dir,
-                                 demo_df=demo_df,
                                  bvecs_from_scanner_file=bvecs_from_scanner_file,
                                  public_sub_id=public_sub_id,
                                  public_output=public_output,
@@ -157,7 +142,7 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
 
 
 def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_modality,
-                     search_str, demo_df=None, bvecs_from_scanner_file=None, public_sub_id=None, public_output=True,
+                     search_str, bvecs_from_scanner_file=None, public_sub_id=None, public_output=True,
                      face_dir=None,
                      reorient2std=True, task=None, direction=None,
                      only_use_last=False, deface=False):
@@ -186,9 +171,6 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             par_file_list = par_file_list[-1:]
 
         for run_id, par_file in enumerate(par_file_list, 1):
-            # export age and sex
-            export_demos(demo_df, sub_output_dir, bids_sub, bids_ses, par_file)
-
             # put together bids file name
             # bids run
             bids_run = "run-" + str(run_id)
