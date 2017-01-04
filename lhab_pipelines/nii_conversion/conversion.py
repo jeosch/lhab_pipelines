@@ -66,9 +66,9 @@ def calc_demos(old_sub_id_list,
                in_ses_folder,
                output_dir,
                demo_file,
+               pwd,
                use_new_ids=True,
                new_id_lut_file=None,
-               pwd=None,
                ):
     '''
     Parallelized submit call over subjects
@@ -104,7 +104,7 @@ def calc_demos(old_sub_id_list,
                     df_subject = fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file)
                     out_demo_df = pd.concat((out_demo_df, df_subject))
 
-    to_tsv(out_demo_df, os.path.join(output_dir, "demos.tsv"))
+    to_tsv(out_demo_df, os.path.join(output_dir, "participants.tsv"))
 
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,

@@ -74,15 +74,9 @@ if __name__ == "__main__":
                in_ses_folder,
                output_dir,
                demo_file,
-
-               # info_list,
-               # bvecs_from_scanner_file=bvecs_from_scanner_file,
-               # public_output=public_output,
+               pwd,
                use_new_ids=use_new_ids,
-               # face_dir=face_dir,
                new_id_lut_file=new_id_lut_file,
-               pwd=pwd,
-               # n_jobs=n_jobs
                )
 
     print("\n\n\n\nDONE.\nConverted %d subjects." % len(old_sub_id_list))
