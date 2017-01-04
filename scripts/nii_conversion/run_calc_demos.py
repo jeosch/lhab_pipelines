@@ -31,7 +31,7 @@ if __name__ == "__main__":
     face_dir = os.path.join(raw_dir, "00_face")
     output_dir = os.path.join(base_dir, "nifti", "sourcedata")
 
-    ses_id_list = ["T1", "T2", "T3"]#, "T4", "T5"]
+    ses_id_list = ["T1", "T2", "T3", "T4", "T5"]
     in_ses_folder = "01_noIF"
     bvecs_from_scanner_file = os.path.join(raw_dir, "00_bvecs/bvecs.fromscanner")
     all_sub_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/lhab_all_subjects.tsv")
