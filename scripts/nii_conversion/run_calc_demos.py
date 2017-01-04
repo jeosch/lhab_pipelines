@@ -20,7 +20,6 @@ from lhab_pipelines.nii_conversion.conversion import calc_demos
 import getpass
 
 if __name__ == "__main__":
-    n_jobs = -1
 
     # privacy settings
     public_output = True
@@ -39,15 +38,6 @@ if __name__ == "__main__":
     new_id_lut_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/new_sub_id_lut.tsv")
     demo_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/dob.zip")
 
-    info_list = [
-        {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True},
-        # {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_"},
-        # {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True},
-        # {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest"},
-        # {"bids_name": "bold", "bids_modality": "fmap", "search_str": "_fmri_pa_T", "direction": "ap"},
-        # {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_pa_T", "direction": "pa"},
-        # {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "direction": "ap"}
-    ]
 
     #
     pwd = getpass.getpass("Enter the Password for dob file:")
