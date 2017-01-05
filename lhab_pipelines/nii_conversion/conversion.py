@@ -4,6 +4,7 @@ import datetime as dt
 from joblib import Parallel, delayed
 import pandas as pd
 
+import lhab_pipelines
 from lhab_pipelines.utils import add_info_to_json, read_protected_file
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
     update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, fetch_demos
@@ -217,6 +218,9 @@ def run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file, nii
     v_start = v.find(b"version ") + 8
     dcm2niix_version = v[v_start:v_start + 10].decode("utf-8")
     add_info_to_json(bids_file, {"conversion_dcm2niix_version": dcm2niix_version})
+
+    ## lhab_pipelines
+    add_info_to_json(bids_file, {"lhab_pipelines_version": lhab_pipelines.__version__})
 
     ## docker container version
     try:
