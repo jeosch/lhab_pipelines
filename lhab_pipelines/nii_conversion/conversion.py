@@ -251,6 +251,7 @@ def run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file, nii
         adc_file = glob(os.path.join(nii_output_dir, "*_dwi_ADC.nii.gz"))[0]
         os.remove(adc_file)
 
+    # fixme
     if on_linux:
         os.remove(abs_par_file)
         os.remove(abs_rec_file)
