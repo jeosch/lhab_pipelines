@@ -105,8 +105,7 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
 
 def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_modality,
                      search_str, bvecs_from_scanner_file=None, public_sub_id=None, public_output=True,
-                     face_dir=None,
-                     reorient2std=True, task=None, direction=None,
+                     face_dir=None, reorient2std=True, task=None, direction=None, acq=None,
                      only_use_last=False, deface=False):
     """
     runs conversion for one subject and one modality
@@ -137,6 +136,10 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             # bids run
             bids_run = "run-" + str(run_id)
             out_components = [bids_sub, bids_ses]
+
+            # bids acq
+            if acq:
+                out_components += ["acq-%s" % acq]
 
             # bids task
             if task:
