@@ -271,6 +271,9 @@ def fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file):
 
     age = "{0:.1f}".format((acq_time - dob).days / 365.25)
     sex = demo_df["sex"]
-    df = pd.DataFrame({"participant_id": [bids_sub], "session_id": [bids_ses], "age": [age], "sex": sex},
+    out_df = pd.DataFrame({"participant_id": [bids_sub], "session_id": [bids_ses], "age": [age], "sex": [sex]},
                       columns=["participant_id", "session_id", "age", "sex"])
-    return df
+    out_acq_time_df = pd.DataFrame({"participant_id": [bids_sub], "session_id": [bids_ses], "acq_time": [acq_time]},
+                          columns=["participant_id", "session_id", "acq_time"])
+
+    return out_df, out_acq_time_df

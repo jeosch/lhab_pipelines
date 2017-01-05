@@ -26,14 +26,13 @@ def calc_demos(old_sub_id_list,
                new_id_lut_file=None,
                ):
     '''
-    Parallelized submit call over subjects
-    public_output: if True: strips all info about original subject_id, file, date
     use_new_ids: if True, uses new id from mapping file
     '''
     assert pwd != "", "password empty"
     demo_df = read_protected_file(demo_file, pwd, "demos.txt")
 
     out_demo_df = pd.DataFrame([])
+    out_acq_time_df = pd.DataFrame([])
     for old_subject_id in old_sub_id_list:
         for old_ses_id in ses_id_list:
             subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
@@ -56,10 +55,13 @@ def calc_demos(old_sub_id_list,
 
                 if par_file_list:
                     par_file = par_file_list[0]
-                    df_subject = fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file)
+                    df_subject, df_acq_time_subject = fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses,
+                                                                  par_file)
                     out_demo_df = pd.concat((out_demo_df, df_subject))
+                    out_acq_time_df = pd.concat((out_acq_time_df, df_acq_time_subject))
 
     to_tsv(out_demo_df, os.path.join(output_dir, "participants.tsv"))
+    to_tsv(df_acq_time_subject, os.path.join(output_dir, "acq_time.tsv"))
 
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,
