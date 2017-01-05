@@ -149,8 +149,9 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             nii_file = os.path.join(nii_output_dir, out_filename + ".nii.gz")
             assert not os.path.exists(nii_file), "file exists. STOP. %s" % nii_file
 
-            bids_file, converter_results = run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file,
-                                                        nii_output_dir, out_filename, par_file, public_output, task)
+            bids_file, converter_results = run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file,
+                                                        mapping_file, nii_file, nii_output_dir, out_filename, par_file,
+                                                        public_output, task)
 
             if reorient2std:
                 reorient = Reorient2Std()
@@ -169,8 +170,8 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
                                              "converted file does not exist. STOP. %s" % nii_file
 
 
-def run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file, nii_output_dir, out_filename, par_file,
-                 public_output, task):
+def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file, nii_file, nii_output_dir,
+                 out_filename, par_file, public_output, task):
     '''
     Converts one par/rec pair to nii.gz.
     Adds scan duration and dcm2niix & docker container version to bids file.
@@ -245,7 +246,7 @@ def run_dcm2niix(bids_name, bvecs_from_scanner_file, mapping_file, nii_file, nii
         os.remove(os.path.join(nii_output_dir, out_filename + '.txt'))
 
     # rotate bvecs and add angulation to json for dwi
-    if bids_name == "dwi":
+    if (bids_name == "dwi") & (bids_modality != "fmap"):
         dwi_treat_bvecs(abs_par_file, bids_file, bvecs_from_scanner_file, nii_output_dir, par_file)
         # remove _dwi_ADC.nii.gz file created by dcm2niix
         adc_file = glob(os.path.join(nii_output_dir, "*_dwi_ADC.nii.gz"))[0]
