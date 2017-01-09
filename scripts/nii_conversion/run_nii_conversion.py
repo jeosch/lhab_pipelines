@@ -103,11 +103,11 @@ if __name__ == "__main__":
     rs_info = {"SliceEncodingDirection": "k", "SliceTiming": np.arange(0, 2.0, 2. / 43)}
 
     info_list = [
-        {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", # FIXME "deface": True,
+        {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True,
          "add_info": {**general_info}},
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", # FIXME "deface": True,
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", "deface": True,
          "add_info": {**general_info}},
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", # FIXME "deface": True,
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", "deface": True,
          "add_info": {**general_info}},
         {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True, "direction": "ap",
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}},
