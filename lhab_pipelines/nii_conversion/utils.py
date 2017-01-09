@@ -39,6 +39,11 @@ def add_additional_bids_parameters_from_par(par_file, bids_file, parameters={"an
     add_info_to_json(bids_file, header_params)
 
 
+def add_flip_angle_from_par(par_file, bids_file):
+    general_info, image_defs = read_par(par_file)
+    add_info_to_json(bids_file, {"FlipAngle": image_defs["image_flip_angle"][0]})
+
+
 def update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file, public_output=True):
     """
     one file per subject with
@@ -104,6 +109,8 @@ def _process_gen_dict(gen_dict):
     import numpy as np
 
     _hdr_key_dict = {
+        'Protocol name': ('protocol_name',),
+        'Technique': ('technique',),
         'Examination date/time': ('exam_date',),
         'Scan Duration [sec]': ('scan_duration', float),
         'Angulation midslice(ap,fh,rl)[degr]': ('angulation', float, (3,)),
@@ -272,8 +279,8 @@ def fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file):
     age = "{0:.1f}".format((acq_time - dob).days / 365.25)
     sex = demo_df["sex"]
     out_df = pd.DataFrame({"participant_id": [bids_sub], "session_id": [bids_ses], "age": [age], "sex": [sex]},
-                      columns=["participant_id", "session_id", "age", "sex"])
+                          columns=["participant_id", "session_id", "age", "sex"])
     out_acq_time_df = pd.DataFrame({"participant_id": [bids_sub], "session_id": [bids_ses], "acq_time": [acq_time]},
-                          columns=["participant_id", "session_id", "acq_time"])
+                                   columns=["participant_id", "session_id", "acq_time"])
 
     return out_df, out_acq_time_df

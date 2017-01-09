@@ -22,6 +22,7 @@ import os, argparse
 from lhab_pipelines.utils import read_tsv
 from lhab_pipelines.nii_conversion.conversion import submit_single_subject
 import datetime as dt
+import numpy as np
 
 # TODO remove sub_id from subject list files
 
@@ -52,12 +53,8 @@ if __name__ == "__main__":
     raw_dir = args.raw_dir
 
     # privacy settings
-    # public_output = True
-    # use_new_ids = True
     public_output = args.public_output
     use_new_ids = args.use_new_ids
-
-    print("public", public_output)
 
     # base_dir = "/data/"
     # raw_dir = os.path.join(base_dir, "raw")
@@ -70,7 +67,7 @@ if __name__ == "__main__":
         exclude_sub_id_list = "none"
     else:
         # SUBJECT ID STUFF
-        all_sub_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/lhab_all_subjects_3.tsv")
+        all_sub_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/lhab_all_subjects.tsv")
         exclude_sub_file = None  # os.path.join(raw_dir,
         # "00_PRIVATE_sub_lists/tp5_sub_exclude.tsv")
 
@@ -92,36 +89,42 @@ if __name__ == "__main__":
     bvecs_from_scanner_file = os.path.join(raw_dir, "00_bvecs/bvecs.fromscanner")
     new_id_lut_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/new_sub_id_lut.tsv")
 
+    # LAS Orientation
+    # i : RL
+    # i-: LR
+    # j : PA
+    # j-: AP
+    # k : IS
+    # k-: SI
+    general_info = {"MagneticFieldStrength": 3.0, "ManufacturersModelName": "Philips Ingenia"}
+    sense_info = {"ParallelAcquisitionTechnique": "SENSE", "ParallelReductionFactorInPlane": 2}
+
+    # TR=2sec, 43 slices,  # ascending sliceorder
+    rs_info = {"SliceEncodingDirection": "k", "SliceTiming": np.arange(0, 2.0, 2. / 43)}
+
     info_list = [
-        {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True},
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D"},
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D"},
-        {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True},
-        {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest"},
-        {"bids_name": "bold", "bids_modality": "fmap", "search_str": "_fmri_pa_T", "direction": "pa"},
-        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_pa_T", "direction": "pa"},
-        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "direction": "ap"}
+        {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", # FIXME "deface": True,
+         "add_info": {**general_info}},
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", # FIXME "deface": True,
+         "add_info": {**general_info}},
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", # FIXME "deface": True,
+         "add_info": {**general_info}},
+        {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True, "direction": "ap",
+         "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}},
+        {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest",
+         "add_info": {**general_info, **sense_info, **rs_info, "PhaseEncodingDirection": "j-"}},
+        {"bids_name": "bold", "bids_modality": "fmap", "search_str": "_fmri_pa_T", "direction": "pa",
+         "add_info": {**general_info, **sense_info, **rs_info, "PhaseEncodingDirection": "j"}},
+        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_pa_T", "direction": "pa",
+         "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j"}},
+        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "direction": "ap",
+         "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}}
     ]
 
     #
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-
-    # convert_subjects(old_sub_id_list,
-    #                  ses_id_list,
-    #                  raw_dir,
-    #                  in_ses_folder,
-    #                  output_dir,
-    #                  info_list,
-    #                  bvecs_from_scanner_file=bvecs_from_scanner_file,
-    #                  public_output=public_output,
-    #                  use_new_ids=use_new_ids,
-    #                  face_dir=face_dir,
-    #                  new_id_lut_file=new_id_lut_file,
-    #                  n_jobs=n_jobs)
-
-
 
     info_file = os.path.join(output_dir, "..", "info.txt")
     s = "\n%s" % dt.datetime.now()
@@ -147,6 +150,3 @@ if __name__ == "__main__":
 
     print("\n\n\n\nDONE.\nConverted %d subjects." % len(old_sub_id_list))
     print(old_sub_id_list)
-    # if exclude_sub_file:
-    #     print("\n\nDid not convert the following subjects: %s "
-    #           "\nbecause they were in the exclude subjects list %s" % (exclude_sub_id_list, exclude_sub_file))

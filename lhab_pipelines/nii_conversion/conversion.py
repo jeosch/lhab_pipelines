@@ -7,7 +7,8 @@ import pandas as pd
 import lhab_pipelines
 from lhab_pipelines.utils import add_info_to_json, read_protected_file
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
-    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, fetch_demos
+    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, fetch_demos, \
+    add_flip_angle_from_par
 from ..utils import get_docker_container_name, read_tsv, to_tsv
 
 from nipype.interfaces.dcm2nii import Dcm2niix
@@ -106,7 +107,7 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
 def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_modality,
                      search_str, bvecs_from_scanner_file=None, public_sub_id=None, public_output=True,
                      face_dir=None, reorient2std=True, task=None, direction=None, acq=None,
-                     only_use_last=False, deface=False):
+                     only_use_last=False, deface=False, add_info={}):
     """
     runs conversion for one subject and one modality
     public_output: if True: strips all info about original subject_id, file, date
@@ -168,6 +169,8 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
                 deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename)
             add_info_to_json(bids_file, {"defaced": deface})
 
+            add_info_to_json(bids_file, add_info)
+
             update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file, public_output)
 
             # finally as a sanity check, check that converted nii exists
@@ -217,21 +220,25 @@ def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file
 
     # add additional information to json
     ## scan duration
-    add_additional_bids_parameters_from_par(abs_par_file, bids_file, {"scan_duration": "ScanDurationSec"})
+    add_additional_bids_parameters_from_par(abs_par_file, bids_file, {"scan_duration": "ScanDurationSec",
+                                                                      "technique": "PulseSequenceType",
+                                                                      "protocol_name": "PulseSequenceDetails"})
+
+    add_flip_angle_from_par(abs_par_file, bids_file)
 
     ## dcm2niix version
     v = converter.version_from_command()
     v_start = v.find(b"version ") + 8
     dcm2niix_version = v[v_start:v_start + 10].decode("utf-8")
-    add_info_to_json(bids_file, {"conversion_dcm2niix_version": dcm2niix_version})
+    add_info_to_json(bids_file, {"ConversionDcm2niixVersion": dcm2niix_version})
 
     ## lhab_pipelines
-    add_info_to_json(bids_file, {"lhab_pipelines_version": lhab_pipelines.__version__})
+    add_info_to_json(bids_file, {"LhabPipelinesVersion": lhab_pipelines.__version__})
 
     ## docker container version
     try:
         docker_container_name = get_docker_container_name()
-        add_info_to_json(bids_file, {"conversion_docker_container_name": docker_container_name})
+        add_info_to_json(bids_file, {"ConversionDockerContainerName": docker_container_name})
     except:
         pass
 
@@ -240,7 +247,7 @@ def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file
         add_info_to_json(bids_file, {"TaskName": task})
 
     ## time
-    add_info_to_json(bids_file, {"conversion_timestamp": str(dt.datetime.now())})
+    add_info_to_json(bids_file, {"ConversionTimestamp": str(dt.datetime.now())})
 
     if not public_output:
         # write par 2 nii mapping file only for private use
