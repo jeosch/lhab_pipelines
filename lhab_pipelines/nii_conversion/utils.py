@@ -43,6 +43,14 @@ def add_flip_angle_from_par(par_file, bids_file):
     general_info, image_defs = read_par(par_file)
     add_info_to_json(bids_file, {"FlipAngle": image_defs["image_flip_angle"][0]})
 
+def add_total_readout_time_from_par(par_file, bids_file):
+    general_info, image_defs = read_par(par_file)
+    wfs = general_info["water_fat_shift"]
+    ef = general_info["epi_factor"]
+    if ef != 1: # ef=1: no EPI --> trt not meaningful
+        es = wfs / (434.215 * (ef + 1)) # echo spacing in sec
+        trt = es * (ef - 1) # in sec
+        add_info_to_json(bids_file, {"TotalReadoutTime": trt, "EffectiveEchoSpacing": es})
 
 def update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file, public_output=True):
     """
@@ -114,6 +122,8 @@ def _process_gen_dict(gen_dict):
         'Examination date/time': ('exam_date',),
         'Scan Duration [sec]': ('scan_duration', float),
         'Angulation midslice(ap,fh,rl)[degr]': ('angulation', float, (3,)),
+        'Water Fat shift [pixels]': ('water_fat_shift', float),
+        'EPI factor        <0,1=no EPI>': ('epi_factor', float),
     }
 
     slice_orientation_translation = {1: 'transverse',
@@ -158,7 +168,7 @@ def deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename):
     deface_log_file = os.path.join(nii_output_dir, out_filename + "_defaced.nii.log")
     with open(deface_log_file) as fi:
         deface_log = fi.read()
-    add_info_to_json(bids_file, {"deface_log": deface_log})
+    # add_info_to_json(bids_file, {"deface_log": deface_log})
     os.remove(deface_log_file)
     # replace file with face with defaced file
     os.remove(nii_file)
@@ -181,7 +191,7 @@ def dwi_treat_bvecs(abs_par_file, bids_file, bvecs_from_scanner_file, nii_output
     rotated_bvecs_las = rotated_bvecs_ras.copy()
     rotated_bvecs_las[0] *= -1
     np.savetxt(bvecs_file, rotated_bvecs_las.T, fmt="%.5f")
-    add_info_to_json(bids_file, {"bvecs_info": "rotated for angulation and in LAS space"})
+    add_info_to_json(bids_file, {"BvecsInfo": "rotated for angulation and in LAS space"})
 
 
 # bvecs operations

@@ -7,6 +7,7 @@ import pandas as pd
 from bids.grabbids import BIDSLayout
 import zipfile
 from io import StringIO
+from collections import OrderedDict
 
 
 def get_docker_container_name():
@@ -48,7 +49,7 @@ def add_info_to_json(bids_file, new_info):
     bids_data.update(new_info)
 
     with open(bids_file, "w") as fi:
-        json.dump(bids_data, fi, indent=4)
+        json.dump(OrderedDict(sorted(bids_data.items())), fi, indent=4)
 
 
 def reduce_sub_files(bids_dir, output_file, sub_file):

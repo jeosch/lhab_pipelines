@@ -13,10 +13,6 @@
 |           |-- lhab_xxxx_2dflair_T2.rec
 ...
 
-TODO:
--fmaps
--slice timing
-
 """
 import os, argparse
 from lhab_pipelines.utils import read_tsv

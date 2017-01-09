@@ -8,7 +8,7 @@ import lhab_pipelines
 from lhab_pipelines.utils import add_info_to_json, read_protected_file
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
     update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, fetch_demos, \
-    add_flip_angle_from_par
+    add_flip_angle_from_par, add_total_readout_time_from_par
 from ..utils import get_docker_container_name, read_tsv, to_tsv
 
 from nipype.interfaces.dcm2nii import Dcm2niix
@@ -167,7 +167,7 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
 
             if deface:
                 deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename)
-            add_info_to_json(bids_file, {"defaced": deface})
+            add_info_to_json(bids_file, {"Defaced": deface})
 
             add_info_to_json(bids_file, add_info)
 
@@ -225,6 +225,7 @@ def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file
                                                                       "protocol_name": "PulseSequenceDetails"})
 
     add_flip_angle_from_par(abs_par_file, bids_file)
+    add_total_readout_time_from_par(abs_par_file, bids_file)
 
     ## dcm2niix version
     v = converter.version_from_command()
