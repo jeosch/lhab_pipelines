@@ -8,6 +8,7 @@ from bids.grabbids import BIDSLayout
 import zipfile
 from io import StringIO
 from collections import OrderedDict
+import numpy
 
 
 def get_docker_container_name():
@@ -26,8 +27,8 @@ def check_docker_container_version(requested_v):
         warnings.warn("Not running in Docker env!")
 
 
-def to_tsv(df, filename):
-    df.to_csv(filename, sep="\t", index=False)
+def to_tsv(df, filename, header=True):
+    df.to_csv(filename, sep="\t", index=False, header=header)
 
 
 def read_tsv(filename):
@@ -40,9 +41,16 @@ def get_json(bids_file):
     return bids_data
 
 
-def add_info_to_json(bids_file, new_info):
-    import numpy
-    bids_data = get_json(bids_file)
+def add_info_to_json(bids_file, new_info, create_new=False):
+    # if create_new=True: if file does not exist, file is created and new_info is written out
+    if os.path.exists(bids_file):
+        bids_data = get_json(bids_file)
+    elif (not os.path.exists(bids_file)) and create_new:
+        bids_data = {}
+    else:
+        raise FileNotFoundError("%s does not exist. Something migth be wrong. If a file should create, "
+                                "use create_new=True " % bids_file)
+
     for k, v in new_info.items():
         if isinstance(v, numpy.ndarray):
             new_info[k] = v.tolist()

@@ -1,4 +1,3 @@
-# fixme imports
 from glob import glob
 import os
 
@@ -294,3 +293,36 @@ def fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file):
                                    columns=["participant_id", "session_id", "acq_time"])
 
     return out_df, out_acq_time_df
+
+def parse_physio(input_file):
+    """
+    loads physio files
+    removes acq date
+    returns meta_data and physio_data (as df)
+    """
+    with open(input_file) as fi:
+        data = fi.read().split("\n")
+    _ = data.pop(1) # remove acq date for anonymization
+
+    meta_data = []
+    physio_data = []
+    for i,l in enumerate(data):
+        if l.startswith("## "):
+            meta_data.append(l)
+        elif l.startswith("# "):
+            header = l.strip("#").split(" ")
+            header_line = i
+    clean_header = list(filter(None, header))
+    physio_data = pd.read_csv(input_file, header=header_line+1, delim_whitespace=True, names=clean_header,index_col=False)
+    return meta_data, physio_data
+
+
+def save_physio(output_filename_base, meta_data, physio_data):
+    tsv_filename = output_filename_base + ".tsv"
+    json_filename = output_filename_base + ".json"
+
+    header = physio_data.columns.tolist()
+    json_data = {"header": header, "meta_data": meta_data}
+    add_info_to_json(json_filename, json_data, create_new=True)
+
+    to_tsv(physio_data, tsv_filename, header=False)

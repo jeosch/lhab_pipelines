@@ -8,7 +8,7 @@ import lhab_pipelines
 from lhab_pipelines.utils import add_info_to_json, read_protected_file
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
     update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, fetch_demos, \
-    add_flip_angle_from_par, add_total_readout_time_from_par
+    add_flip_angle_from_par, add_total_readout_time_from_par, parse_physio, save_physio
 from ..utils import get_docker_container_name, read_tsv, to_tsv
 
 from nipype.interfaces.dcm2nii import Dcm2niix
@@ -77,6 +77,7 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
     if public_output:
         assert use_new_ids, "Public output requested, but retaining old subject ids; Doesn't sound good."
 
+    some_data_found = False
     for old_ses_id in ses_id_list:
         subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
         os.chdir(subject_ses_folder)
@@ -84,6 +85,7 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
         assert len(subject_folder) < 2, "more than one subject folder %s" % old_subject_id
 
         if subject_folder:
+            some_data_found = True
             subject_folder = subject_folder[0]
             abs_subject_folder = os.path.abspath(subject_folder)
             os.chdir(abs_subject_folder)
@@ -103,11 +105,14 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
                                  face_dir=face_dir,
                                  **infodict)
 
+    if not some_data_found:
+        raise FileNotFoundError("No data found for %s. Check again. Stopping..." % old_subject_id)
+
 
 def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_modality,
                      search_str, bvecs_from_scanner_file=None, public_sub_id=None, public_output=True,
                      face_dir=None, reorient2std=True, task=None, direction=None, acq=None,
-                     only_use_last=False, deface=False, add_info={}):
+                     only_use_last=False, deface=False, physio=False, add_info={}):
     """
     runs conversion for one subject and one modality
     public_output: if True: strips all info about original subject_id, file, date
@@ -176,6 +181,16 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
             # finally as a sanity check, check that converted nii exists
             assert os.path.exists(nii_file), "Something went wrong" \
                                              "converted file does not exist. STOP. %s" % nii_file
+
+            if physio:  # convert physiological data
+                physio_search_str = ".".join(par_file.split(".")[:-1]) + "_physio.log"
+                physio_in_file_list = glob(physio_search_str)
+                assert len(physio_in_file_list) < 2, "more than 1  phyio file found for %s" % physio_search_str
+
+                if physio_in_file_list:
+                    physio_out_file_base = os.path.join(nii_output_dir, out_filename + "_physio")
+                    meta_data, physio_data = parse_physio(physio_in_file_list[0])
+                    save_physio(physio_out_file_base, meta_data, physio_data)
 
 
 def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file, nii_file, nii_output_dir,

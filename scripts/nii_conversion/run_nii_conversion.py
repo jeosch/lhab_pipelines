@@ -15,7 +15,7 @@
 
 """
 import os, argparse
-from lhab_pipelines.utils import read_tsv
+from lhab_pipelines.utils import read_tsv, add_info_to_json
 from lhab_pipelines.nii_conversion.conversion import submit_single_subject
 import datetime as dt
 import numpy as np
@@ -99,22 +99,30 @@ if __name__ == "__main__":
     rs_info = {"SliceEncodingDirection": "k", "SliceTiming": np.arange(0, 2.0, 2. / 43)}
 
     info_list = [
+        # anatomical
         {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True,
          "add_info": {**general_info}},
         {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", "deface": True,
          "add_info": {**general_info}},
         {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", "deface": True,
          "add_info": {**general_info}},
+
+        # dwi
         {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True, "direction": "ap",
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}},
-        {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest",
+
+        # func
+        {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest", "physio": True,
          "add_info": {**general_info, **sense_info, **rs_info, "PhaseEncodingDirection": "j-"}},
+
+        # fieldmaps
         {"bids_name": "bold", "bids_modality": "fmap", "search_str": "_fmri_pa_T", "direction": "pa",
          "add_info": {**general_info, **sense_info, **rs_info, "PhaseEncodingDirection": "j"}},
         {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_pa_T", "direction": "pa",
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j"}},
         {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "direction": "ap",
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}}
+
     ]
 
     #
@@ -130,6 +138,12 @@ if __name__ == "__main__":
     if not os.path.exists(info_file):
         with open(info_file, "w") as fi:
             fi.write(s)
+
+    ds_desc_file = os.path.join(output_dir, "dataset_description.json")
+    if not os.path.exists(ds_desc_file):
+        description = {"Name": "LHAB longitudinal healthy aging brain study",
+                       "BIDSVersion": "1.0.0"}
+        add_info_to_json(ds_desc_file, description, create_new=True)
 
     for old_subject_id in old_sub_id_list:
         submit_single_subject(old_subject_id,
