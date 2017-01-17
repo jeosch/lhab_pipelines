@@ -43,6 +43,7 @@ if __name__ == "__main__":
     parser.add_argument('--no-use_new_ids', help="Don't use new subject ids. "
                                                  "\nDefault: Use new ids from mapping file",
                         default=True, dest="use_new_ids", action='store_false')
+    parser.add_argument('--ds_version', help="Data set version (is added to output path)", default="dev")
 
     args = parser.parse_args()
 
@@ -51,11 +52,13 @@ if __name__ == "__main__":
     # privacy settings
     public_output = args.public_output
     use_new_ids = args.use_new_ids
+    if not (public_output and use_new_ids):
+        private_str = "_PRIVATE"
+    else:
+        private_str = ""
 
-    # base_dir = "/data/"
-    # raw_dir = os.path.join(base_dir, "raw")
     face_dir = os.path.join(raw_dir, "00_face")
-    output_dir = os.path.join(args.output_base_dir, "nifti", "sourcedata")
+    output_dir = os.path.join(args.output_base_dir, "LHAB_" + args.ds_version + private_str, "sourcedata")
 
     ###
     if args.participant_label:
