@@ -12,8 +12,8 @@ RUN cd /tmp && \
   	cd dcm2niix-* && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/ . && make install && \
     cd /tmp && rm -rf /tmp/dcm2niix*
 
-COPY lhab_pipelines /code/lhab_pipelines/
-COPY scripts /code/lhab_pipelines/
+COPY lhab_pipelines /code/lhab_pipelines/lhab_pipelines
+COPY scripts /code/lhab_pipelines/scripts
 COPY version /version
 
 CMD ["/bin/bash"]
