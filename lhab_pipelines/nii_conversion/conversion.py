@@ -9,7 +9,7 @@ from lhab_pipelines.utils import add_info_to_json, read_protected_file
 from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
     update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, fetch_demos, \
     add_flip_angle_from_par, add_total_readout_time_from_par, parse_physio, save_physio
-from ..utils import get_docker_container_name, read_tsv, to_tsv
+from ..utils import read_tsv, to_tsv
 
 from nipype.interfaces.dcm2nii import Dcm2niix
 from nipype.interfaces.fsl import Reorient2Std
@@ -250,13 +250,6 @@ def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file
 
     ## lhab_pipelines
     add_info_to_json(bids_file, {"LhabPipelinesVersion": lhab_pipelines.__version__})
-
-    ## docker container version
-    try:
-        docker_container_name = get_docker_container_name()
-        add_info_to_json(bids_file, {"ConversionDockerContainerName": docker_container_name})
-    except:
-        pass
 
     ## task
     if task:
