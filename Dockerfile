@@ -12,7 +12,8 @@ RUN cd /tmp && \
   	cmake -DBATCH_VERSION=ON .. && \
   	make && make install
 
-
+COPY lhab_pipelines /code/lhab_pipelines/
+COPY scripts /code/lhab_pipelines/
 COPY version /version
 
 CMD ["/bin/bash"]
