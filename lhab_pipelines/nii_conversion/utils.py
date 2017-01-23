@@ -5,7 +5,7 @@ import nibabel as nb
 import numpy as np
 import pandas as pd
 
-from lhab_pipelines.utils import to_tsv, read_tsv, add_info_to_json, get_docker_container_name
+from lhab_pipelines.utils import to_tsv, read_tsv, add_info_to_json
 
 
 # subject and session id related
