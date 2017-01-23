@@ -20,8 +20,6 @@ from lhab_pipelines.nii_conversion.conversion import submit_single_subject
 import datetime as dt
 import numpy as np
 
-# TODO remove sub_id from subject list files
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='LHAB raw to nifti conversion. \nBIDS-Apps compatiple arguments.'
                                                  "\nexample:\n python run_nii_conversion.py /data/raw /data/ participant "
@@ -155,7 +153,8 @@ if __name__ == "__main__":
                                            "acknowledge the original authors. This "
                                            "field can also be used to define a publication that should be cited in publications that use "
                                            "the dataset",
-                       "Funding": "XXXXXX sources of funding (grant numbers)"}
+                       "Funding": "XXXXXX sources of funding (grant numbers)",
+                       "DataSetVersion": args.ds_version}
         add_info_to_json(ds_desc_file, description, create_new=True)
 
     for old_subject_id in old_sub_id_list:
