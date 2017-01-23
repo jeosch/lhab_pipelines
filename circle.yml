@@ -20,7 +20,7 @@ dependencies:
 
 test:
   override:
-    - docker run -ti --rm fliem/${CIRCLE_PROJECT_REPONAME,,} nosetests /code/lhab_pipelines/
+    - docker run -ti --rm fliem/${CIRCLE_PROJECT_REPONAME,,} nosetests -v /code/lhab_pipelines/
 
 deployment:
   hub:
