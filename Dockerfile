@@ -14,6 +14,6 @@ RUN cd /tmp && \
 
 COPY lhab_pipelines /code/lhab_pipelines/lhab_pipelines
 COPY scripts /code/lhab_pipelines/scripts
-COPY version /version
+COPY version /code/lhab_pipelines/version
 
 CMD ["/bin/bash"]
