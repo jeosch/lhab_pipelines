@@ -33,6 +33,7 @@ def test_rotate_bvecs_angulation():
     diff = np.abs((rotated_bvecs - goal_bvecs).sum())
     assert (diff > 0.1)
 
+
 def test_get_public_sub_id():
     """test get_public_sub_id"""
     data_path = os.path.join(os.path.dirname(utils.__file__), 'test_data')

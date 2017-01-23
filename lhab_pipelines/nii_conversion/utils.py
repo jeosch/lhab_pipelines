@@ -25,11 +25,6 @@ def get_public_sub_id(old_sub_id, lut_file):
     return df.loc[old_sub_id].values[0]
 
 
-def test_get_public_sub_id():
-    new_id = get_public_sub_id("lhab_abc2", "test_data/lut_test.tsv")
-    assert (new_id == "lhabX0003"), "Test failed"
-
-
 # BIDS related IO
 def add_additional_bids_parameters_from_par(par_file, bids_file, parameters={"angulation": "Angulation"}):
     header_params = {}
@@ -42,14 +37,16 @@ def add_flip_angle_from_par(par_file, bids_file):
     general_info, image_defs = read_par(par_file)
     add_info_to_json(bids_file, {"FlipAngle": image_defs["image_flip_angle"][0]})
 
+
 def add_total_readout_time_from_par(par_file, bids_file):
     general_info, image_defs = read_par(par_file)
     wfs = general_info["water_fat_shift"]
     ef = general_info["epi_factor"]
-    if ef != 1: # ef=1: no EPI --> trt not meaningful
-        es = wfs / (434.215 * (ef + 1)) # echo spacing in sec
-        trt = es * (ef - 1) # in sec
+    if ef != 1:  # ef=1: no EPI --> trt not meaningful
+        es = wfs / (434.215 * (ef + 1))  # echo spacing in sec
+        trt = es * (ef - 1)  # in sec
         add_info_to_json(bids_file, {"TotalReadoutTime": trt, "EffectiveEchoSpacing": es})
+
 
 def update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_filename, par_file, public_output=True):
     """
@@ -294,6 +291,7 @@ def fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file):
 
     return out_df, out_acq_time_df
 
+
 def parse_physio(input_file):
     """
     loads physio files
@@ -302,18 +300,19 @@ def parse_physio(input_file):
     """
     with open(input_file) as fi:
         data = fi.read().split("\n")
-    _ = data.pop(1) # remove acq date for anonymization
+    _ = data.pop(1)  # remove acq date for anonymization
 
     meta_data = []
     physio_data = []
-    for i,l in enumerate(data):
+    for i, l in enumerate(data):
         if l.startswith("## "):
             meta_data.append(l)
         elif l.startswith("# "):
             header = l.strip("#").split(" ")
             header_line = i
     clean_header = list(filter(None, header))
-    physio_data = pd.read_csv(input_file, header=header_line+1, delim_whitespace=True, names=clean_header,index_col=False)
+    physio_data = pd.read_csv(input_file, header=header_line + 1, delim_whitespace=True, names=clean_header,
+                              index_col=False)
     return meta_data, physio_data
 
 
