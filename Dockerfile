@@ -1,4 +1,4 @@
-FROM fliem/lhab_pipeline_base:v1.0
+FROM fliem/lhab_pipelines_base:v1.0
 
 # tools that are in dev
 
