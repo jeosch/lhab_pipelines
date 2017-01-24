@@ -242,11 +242,12 @@ def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file
     add_flip_angle_from_par(abs_par_file, bids_file)
     add_total_readout_time_from_par(abs_par_file, bids_file)
 
-    ## dcm2niix version
-    v = converter.version_from_command()
-    v_start = v.find(b"version ") + 8
-    dcm2niix_version = v[v_start:v_start + 10].decode("utf-8")
-    add_info_to_json(bids_file, {"ConversionDcm2niixVersion": dcm2niix_version})
+    # FIXME delete if dcm2niix update works
+    # ## dcm2niix version
+    # v = converter.version_from_command()
+    # v_start = v.find(b"version ") + 8
+    # dcm2niix_version = v[v_start:v_start + 10].decode("utf-8")
+    # add_info_to_json(bids_file, {"ConversionDcm2niixVersion": dcm2niix_version})
 
     ## lhab_pipelines
     add_info_to_json(bids_file, {"LhabPipelinesVersion": lhab_pipelines.__version__})
