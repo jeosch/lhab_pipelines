@@ -102,9 +102,9 @@ if __name__ == "__main__":
         {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True,
          "add_info": {**general_info}},
 
-        # # dwi
-        # {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True, "direction": "ap",
-        #  "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}},
+        # dwi
+        {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True, "direction": "ap",
+         "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}},
 
         # func
         {"bids_name": "bold", "bids_modality": "func", "search_str": "_fmri_T", "task": "rest", "physio": True,
@@ -113,10 +113,10 @@ if __name__ == "__main__":
         # fieldmaps
         {"bids_name": "bold", "bids_modality": "fmap", "search_str": "_fmri_pa_T", "direction": "pa",
          "add_info": {**general_info, **sense_info, **rs_info, "PhaseEncodingDirection": "j"}},
-        # {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_pa_T", "direction": "pa",
-        #  "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j"}},
-        # {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "direction": "ap",
-        #  "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}}
+        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_pa_T", "direction": "pa",
+         "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j"}},
+        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "direction": "ap",
+         "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}}
 
     ]
     info_list_flair = [
@@ -189,7 +189,15 @@ if __name__ == "__main__":
                       oj(output_dir, "sub-lhabX9999/ses-tp1/anat/sub-lhabX9999_ses-tp1_run-1_T1w.json"),
                       oj(output_dir, "sub-lhabX9999/ses-tp3/anat/sub-lhabX9999_ses-tp3_run-1_T1w.json"),
                       oj(output_dir, "sub-lhabX9999/ses-tp3/func/sub-lhabX9999_ses-tp3_task-rest_run-1_bold.nii.gz"),
-                      oj(output_dir, "sub-lhabX9999/ses-tp3/fmap/sub-lhabX9999_ses-tp3_dir-pa_run-1_bold.nii.gz")
+                      oj(output_dir, "sub-lhabX9999/ses-tp3/fmap/sub-lhabX9999_ses-tp3_dir-pa_run-1_bold.nii.gz"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.nii.gz"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.nii.gz"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.nii.gz"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.json"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.bval"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.bvec"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp3/fmap/sub-lhabX9999_ses-tp3_dir-ap_run-1_dwi.nii.gz"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp3/fmap/sub-lhabX9999_ses-tp3_dir-pa_run-1_dwi.nii.gz"),
                       ]
     if not public_output:
         shouldbe_there += [
