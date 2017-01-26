@@ -12,7 +12,7 @@ RUN apt-get update && apt-get upgrade -y && \
 	  apt-get clean -y && apt-get autoclean -y && apt-get autoremove -y
 
 RUN cd /tmp && \
-    wget https://github.com/rordenlab/dcm2niix/archive/d7ab348bf95b398222d4053646d6c2ee11a73449.zip -O dcm2niix.zip && \
+    wget https://github.com/rordenlab/dcm2niix/archive/b6689d76821275824747743de92d93e2c322ff7c.zip -O dcm2niix.zip && \
     unzip dcm2niix.zip && rm dcm2niix.zip && \
   	cd dcm2niix-* && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr/ . && make install && \
     cd /tmp && rm -rf /tmp/dcm2niix*
