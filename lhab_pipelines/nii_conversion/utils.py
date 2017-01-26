@@ -155,7 +155,7 @@ def deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename):
     old_wd = os.getcwd()
     os.chdir(nii_output_dir)
     defaced_file = os.path.join(nii_output_dir, out_filename + "_defaced.nii.gz")
-    cmd = "pydeface {in_file} {defaced_file}".format(in_file=nii_file, defaced_file=defaced_file)
+    cmd = "pydeface.py {in_file} {defaced_file}".format(in_file=nii_file, defaced_file=defaced_file)
     print(cmd)
     os.system(cmd)
     # replace file with face with defaced file
