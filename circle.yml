@@ -6,9 +6,9 @@ machine:
   services:
     - docker #don't use 1.10 - caching is broken
 
-# dependencies:
-#   cache_directories:
-#     - "~/docker"
+dependencies:
+  # cache_directories:
+  #   - "~/docker"
 
   override:
     - if [[ -e ~/docker/image.tar ]]; then docker load -i ~/docker/image.tar; fi
