@@ -164,7 +164,7 @@ def deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename):
     deface_log_file = os.path.join(nii_output_dir, out_filename + "_defaced.nii.log")
     with open(deface_log_file) as fi:
         deface_log = fi.read()
-    # add_info_to_json(bids_file, {"deface_log": deface_log})
+    add_info_to_json(bids_file, {"DefaceLog": deface_log})
     os.remove(deface_log_file)
     # replace file with face with defaced file
     os.remove(nii_file)
