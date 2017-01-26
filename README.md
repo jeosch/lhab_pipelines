@@ -12,3 +12,4 @@ based on fliem/lhab_pipelines_base:v1.0
 * pybids
 * bids-validator 0.19.8
 * dcm2niix b6689d76821275824747743de92d93e2c322ff7c (2017-01-26)
+* pydeface d9a9e09cfafa6f080edbe72c5930aa7778544fa3
