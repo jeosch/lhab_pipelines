@@ -13,6 +13,7 @@
 |           |-- lhab_xxxx_2dflair_T2.rec
 ...
 
+# only converts flair if private output due to unreliable defacing
 """
 import os, argparse
 from lhab_pipelines.utils import read_tsv, add_info_to_json
