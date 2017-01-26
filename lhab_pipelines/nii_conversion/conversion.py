@@ -199,24 +199,9 @@ def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file
     Converts one par/rec pair to nii.gz.
     Adds scan duration and dcm2niix & docker container version to bids file.
     '''
-    # fixme bug in dcm2niix requires capital letter extension .PAR .REC (Linux only)
-    # abs_par_file = os.path.abspath(par_file)
-    # abs_rec_file = os.path.splitext(abs_par_file)[0] + ".rec"
-    parrec_name = os.path.splitext(os.path.abspath(par_file))[0]
-    abs_par_file_orig = parrec_name + ".par"
-    abs_rec_file_orig = parrec_name + ".rec"
-    abs_par_file = parrec_name + ".PAR"
-    abs_rec_file = parrec_name + ".REC"
 
-    # try symlink; this does not work in macos hosts, where par PAR is not an issue
-    on_linux = False
-    try:
-        os.symlink(abs_par_file_orig, abs_par_file)
-        os.symlink(abs_rec_file_orig, abs_rec_file)
-        on_linux = True
-    except FileExistsError:
-        abs_par_file = os.path.abspath(par_file)
-        abs_rec_file = os.path.splitext(abs_par_file)[0] + ".rec"
+    abs_par_file = os.path.abspath(par_file)
+    abs_rec_file = os.path.splitext(abs_par_file)[0] + ".rec"
 
     assert os.path.exists(abs_rec_file), "REC file does not exist %s" % abs_rec_file
 
@@ -242,13 +227,6 @@ def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file
     add_flip_angle_from_par(abs_par_file, bids_file)
     add_total_readout_time_from_par(abs_par_file, bids_file)
 
-    # FIXME delete if dcm2niix update works
-    # ## dcm2niix version
-    # v = converter.version_from_command()
-    # v_start = v.find(b"version ") + 8
-    # dcm2niix_version = v[v_start:v_start + 10].decode("utf-8")
-    # add_info_to_json(bids_file, {"ConversionDcm2niixVersion": dcm2niix_version})
-
     ## lhab_pipelines
     add_info_to_json(bids_file, {"LhabPipelinesVersion": lhab_pipelines.__version__})
 
@@ -273,10 +251,5 @@ def run_dcm2niix(bids_name, bids_modality, bvecs_from_scanner_file, mapping_file
         # remove _dwi_ADC.nii.gz file created by dcm2niix
         adc_file = glob(os.path.join(nii_output_dir, "*_dwi_ADC.nii.gz"))[0]
         os.remove(adc_file)
-
-    # fixme
-    if on_linux:
-        os.remove(abs_par_file)
-        os.remove(abs_rec_file)
 
     return bids_file, converter_results
