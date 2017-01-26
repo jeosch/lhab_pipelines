@@ -56,7 +56,7 @@ def update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_fil
     -if not public: date of acquisition
     """
     general_info, image_defs = read_par(par_file)
-    acq_time = pd.to_datetime(general_info["exam_date"], format="%Y.%m.%d / %H:%M:%S")
+    acq_time = parse_acq_time(general_info)
 
     scans_file = os.path.join(output_dir, bids_sub, bids_sub + "_scans.tsv")
     if os.path.exists(scans_file):
@@ -271,6 +271,24 @@ def rotate_vectors(directions, ap, fh, rl, orient):
 
     return directions
 
+def parse_acq_time(general_info):
+    """
+    Depending on the par file, date sometimes is represented as
+    %Y.%m.%d / %H:%M:%S, sometimes as
+    %d.%m.%Y / %H:%M:%S
+    function returns acquisition time regardless of format
+    """
+
+    try:
+        acq_time = pd.to_datetime(general_info["exam_date"], format="%Y.%m.%d / %H:%M:%S")
+    except:
+        try:
+            acq_time = pd.to_datetime(general_info["exam_date"], format="%d.%m.%Y / %H:%M:%S")
+        except:
+            raise Exception("acuisition time in par file does neither conform to "
+                            "%Y.%m.%d / %H:%M:%S, nor to %d.%m.%Y / %H:%M:%S. %s" % general_info)
+    return acq_time
+
 
 def fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file):
     """
@@ -279,7 +297,8 @@ def fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses, par_file):
     """
     demo_df = demo_df.loc[old_subject_id]
     general_info, image_defs = read_par(par_file)
-    acq_time = pd.to_datetime(general_info["exam_date"], format="%Y.%m.%d / %H:%M:%S")
+
+    acq_time = parse_acq_time(general_info)
     dob = pd.to_datetime(demo_df["dob"], format="%Y-%m-%d")
 
     age = "{0:.1f}".format((acq_time - dob).days / 365.25)
