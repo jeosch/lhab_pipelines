@@ -196,8 +196,8 @@ if __name__ == "__main__":
                       oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.json"),
                       oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.bval"),
                       oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.bvec"),
-                      oj(output_dir, "sub-lhabX9999/ses-tp1/fmap/sub-lhabX9999_ses-tp3_dir-ap_run-1_dwi.nii.gz"),
-                      oj(output_dir, "sub-lhabX9999/ses-tp1/fmap/sub-lhabX9999_ses-tp3_dir-pa_run-1_dwi.nii.gz"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp3/fmap/sub-lhabX9999_ses-tp3_dir-ap_run-1_dwi.nii.gz"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp3/fmap/sub-lhabX9999_ses-tp3_dir-pa_run-1_dwi.nii.gz"),
                       ]
     if not public_output:
         shouldbe_there += [
