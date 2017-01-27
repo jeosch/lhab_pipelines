@@ -154,18 +154,10 @@ def _process_gen_dict(gen_dict):
 def deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename):
     old_wd = os.getcwd()
     os.chdir(nii_output_dir)
-    tal_file = os.path.join(face_dir, "talairach_mixed_with_skull.gca")
-    face_file = os.path.join(face_dir, "face.gca")
     defaced_file = os.path.join(nii_output_dir, out_filename + "_defaced.nii.gz")
-    cmd = "mri_deface {in_file} {tal_file} {face_file} {defaced_file}".format(
-        in_file=nii_file, tal_file=tal_file, face_file=face_file, defaced_file=defaced_file)
+    cmd = "pydeface.py {in_file} {defaced_file}".format(in_file=nii_file, defaced_file=defaced_file)
     print(cmd)
     os.system(cmd)
-    deface_log_file = os.path.join(nii_output_dir, out_filename + "_defaced.nii.log")
-    with open(deface_log_file) as fi:
-        deface_log = fi.read()
-    add_info_to_json(bids_file, {"DefaceLog": deface_log})
-    os.remove(deface_log_file)
     # replace file with face with defaced file
     os.remove(nii_file)
     os.rename(defaced_file, nii_file)

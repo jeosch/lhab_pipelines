@@ -21,6 +21,12 @@ RUN cd /tmp && \
 
 RUN pip install pybids
 
+RUN cd /tmp && \
+    wget https://github.com/poldracklab/pydeface/archive/d9a9e09cfafa6f080edbe72c5930aa7778544fa3.zip -O pydeface.zip && \
+    unzip pydeface.zip && rm pydeface.zip && \
+    cd pydeface-* && python setup.py install && cd /tmp && rm -rf /tmp/pydeface*
+
+
 COPY lhab_pipelines /code/lhab_pipelines/lhab_pipelines
 COPY scripts /code/lhab_pipelines/scripts
 COPY version /code/lhab_pipelines/version

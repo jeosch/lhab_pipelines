@@ -117,6 +117,9 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
     runs conversion for one subject and one modality
     public_output: if True: strips all info about original subject_id, file, date
     """
+    if (public_output and bids_modality=="anat" and not deface):
+        raise Exception("Public output requested, but anatomical images not defaced. exit. %s %s %s"%(
+            old_subject_id, old_ses_id,bids_name))
 
     new_ses_id = get_new_ses_id(old_ses_id)
     bids_ses = "ses-" + new_ses_id

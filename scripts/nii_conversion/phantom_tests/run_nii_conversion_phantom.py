@@ -101,6 +101,11 @@ if __name__ == "__main__":
         # anatomical
         {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True,
          "add_info": {**general_info}},
+        # flair
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", "deface": True,
+         "add_info": {**general_info}},
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", "deface": True,
+         "add_info": {**general_info}},
 
         # dwi
         {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True, "direction": "ap",
@@ -117,19 +122,9 @@ if __name__ == "__main__":
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j"}},
         {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "direction": "ap",
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}}
-
     ]
-    info_list_flair = [
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", "deface": False,
-         "add_info": {**general_info}},
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", "deface": False,
-         "add_info": {**general_info}}]
 
-    if not public_output:
-        # since defacing does not work reliabli with flair data, only include if not public output
-        info_list += info_list_flair
     #
-
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
@@ -188,6 +183,8 @@ if __name__ == "__main__":
                       oj(output_dir, "sub-lhabX9999/ses-tp3/anat/sub-lhabX9999_ses-tp3_run-1_T1w.nii.gz"),
                       oj(output_dir, "sub-lhabX9999/ses-tp1/anat/sub-lhabX9999_ses-tp1_run-1_T1w.json"),
                       oj(output_dir, "sub-lhabX9999/ses-tp3/anat/sub-lhabX9999_ses-tp3_run-1_T1w.json"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp1/anat/sub-lhabX9999_ses-tp1_acq-2D_run-1_FLAIR.nii.gz"),
+                      oj(output_dir, "sub-lhabX9999/ses-tp1/anat/sub-lhabX9999_ses-tp1_acq-3D_run-1_FLAIR.nii.gz"),
                       oj(output_dir, "sub-lhabX9999/ses-tp3/func/sub-lhabX9999_ses-tp3_task-rest_run-1_bold.nii.gz"),
                       oj(output_dir, "sub-lhabX9999/ses-tp3/fmap/sub-lhabX9999_ses-tp3_dir-pa_run-1_bold.nii.gz"),
                       oj(output_dir, "sub-lhabX9999/ses-tp1/dwi/sub-lhabX9999_ses-tp1_dir-ap_run-1_dwi.nii.gz"),
@@ -199,11 +196,6 @@ if __name__ == "__main__":
                       oj(output_dir, "sub-lhabX9999/ses-tp3/fmap/sub-lhabX9999_ses-tp3_dir-ap_run-1_dwi.nii.gz"),
                       oj(output_dir, "sub-lhabX9999/ses-tp3/fmap/sub-lhabX9999_ses-tp3_dir-pa_run-1_dwi.nii.gz"),
                       ]
-    if not public_output:
-        shouldbe_there += [
-            oj(output_dir, "sub-lhabX9999/ses-tp1/anat/sub-lhabX9999_ses-tp1_acq-2D_run-1_FLAIR.nii.gz"),
-            oj(output_dir, "sub-lhabX9999/ses-tp1/anat/sub-lhabX9999_ses-tp1_acq-3D_run-1_FLAIR.nii.gz")
-        ]
 
     for f in shouldbe_there:
         if not os.path.exists(f):
@@ -220,8 +212,6 @@ if __name__ == "__main__":
         shouldnotbe_there = [
             oj(output_dir, "sub-lhabX9999/ses-tp1/anat/sub-lhabX9999_ses-tp1_run-1_T1w.txt"),
             oj(output_dir, "sub-lhabX9999/par2nii_mapping.txt"),
-            oj(output_dir, "sub-lhabX9999/ses-tp1/anat/sub-lhabX9999_ses-tp1_acq-2D_run-1_FLAIR.nii.gz"),
-            oj(output_dir, "sub-lhabX9999/ses-tp1/anat/sub-lhabX9999_ses-tp1_acq-3D_run-1_FLAIR.nii.gz")
         ]
         for f in shouldnotbe_there:
             if os.path.exists(f):

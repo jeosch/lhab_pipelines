@@ -104,6 +104,11 @@ if __name__ == "__main__":
         # anatomical
         {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True,
          "add_info": {**general_info}},
+        # flair
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", "deface": True,
+         "add_info": {**general_info}},
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", "deface": True,
+         "add_info": {**general_info}},
 
         # dwi
         {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True, "direction": "ap",
@@ -122,18 +127,7 @@ if __name__ == "__main__":
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}}
     ]
 
-    info_list_flair = [
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", "deface": False,
-         "add_info": {**general_info}},
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", "deface": False,
-         "add_info": {**general_info}}]
-
-    if not public_output:
-        # since defacing does not work reliabli with flair data, only include if not public output
-        info_list += info_list_flair
-
     #
-
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
 
