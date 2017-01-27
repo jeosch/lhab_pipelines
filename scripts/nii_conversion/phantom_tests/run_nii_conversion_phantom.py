@@ -102,9 +102,9 @@ if __name__ == "__main__":
         {"bids_name": "T1w", "bids_modality": "anat", "search_str": "_t1w_", "deface": True,
          "add_info": {**general_info}},
         # flair
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", "deface": False,
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_2dflair_", "acq": "2D", "deface": True,
          "add_info": {**general_info}},
-        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", "deface": False,
+        {"bids_name": "FLAIR", "bids_modality": "anat", "search_str": "_3dflair_", "acq": "3D", "deface": True,
          "add_info": {**general_info}},
 
         # dwi
