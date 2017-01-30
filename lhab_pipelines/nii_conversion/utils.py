@@ -151,7 +151,7 @@ def _process_gen_dict(gen_dict):
 
 
 # higher level conversion
-def deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename):
+def deface_data(nii_file, nii_output_dir, out_filename):
     old_wd = os.getcwd()
     os.chdir(nii_output_dir)
     defaced_file = os.path.join(nii_output_dir, out_filename + "_defaced.nii.gz")

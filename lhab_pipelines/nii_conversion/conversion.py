@@ -67,7 +67,7 @@ def calc_demos(old_sub_id_list,
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,
                           bvecs_from_scanner_file=None, public_output=True, use_new_ids=True,
-                          face_dir=None, new_id_lut_file=None):
+                          new_id_lut_file=None):
     """
     Loops through raw folders and identifies old_subject_id in tps.
     Pipes available tps into convert_modality
@@ -102,7 +102,6 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
                                  bvecs_from_scanner_file=bvecs_from_scanner_file,
                                  public_sub_id=public_sub_id,
                                  public_output=public_output,
-                                 face_dir=face_dir,
                                  **infodict)
 
     if not some_data_found:
@@ -111,7 +110,7 @@ def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, o
 
 def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_modality,
                      search_str, bvecs_from_scanner_file=None, public_sub_id=None, public_output=True,
-                     face_dir=None, reorient2std=True, task=None, direction=None, acq=None,
+                     reorient2std=True, task=None, direction=None, acq=None,
                      only_use_last=False, deface=False, physio=False, add_info={}):
     """
     runs conversion for one subject and one modality
@@ -174,7 +173,7 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
                 reorient_results = reorient.run()
 
             if deface:
-                deface_data(bids_file, face_dir, nii_file, nii_output_dir, out_filename)
+                deface_data(nii_file, nii_output_dir, out_filename)
             add_info_to_json(bids_file, {"Defaced": deface})
 
             add_info_to_json(bids_file, add_info)
