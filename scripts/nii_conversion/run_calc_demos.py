@@ -17,7 +17,6 @@
 import os
 from lhab_pipelines.utils import read_tsv
 from lhab_pipelines.nii_conversion.conversion import calc_demos
-import getpass
 import argparse
 
 if __name__ == "__main__":
@@ -84,7 +83,7 @@ if __name__ == "__main__":
     demo_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/dob.zip")
 
     #
-    pwd = args.pw #getpass.getpass("Enter the Password for dob file:")
+    pwd = args.pw
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
