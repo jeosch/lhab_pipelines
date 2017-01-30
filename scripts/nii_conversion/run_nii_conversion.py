@@ -56,7 +56,6 @@ if __name__ == "__main__":
     else:
         private_str = ""
 
-    face_dir = os.path.join(raw_dir, "00_face")
     output_dir = os.path.join(args.output_base_dir, "LHAB_" + args.ds_version + private_str, "sourcedata")
 
     ###
@@ -167,7 +166,6 @@ if __name__ == "__main__":
                               bvecs_from_scanner_file=bvecs_from_scanner_file,
                               public_output=public_output,
                               use_new_ids=use_new_ids,
-                              face_dir=face_dir,
                               new_id_lut_file=new_id_lut_file)
 
     print("\n\n\n\nDONE.\nConverted %d subjects." % len(old_sub_id_list))
