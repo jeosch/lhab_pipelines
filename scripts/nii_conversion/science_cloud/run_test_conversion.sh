@@ -40,7 +40,7 @@ fliem/lhab_pipelines:v1.0.0.rc1 \
 /data.nfs/LHAB/01_RAW /data.nfs/LHAB/NIFTI group \
 --volumes /data.nfs/code/lhab_pipelines /code/lhab_pipelines \
 -pf /data.nfs/LHAB/01_RAW/00_PRIVATE_sub_lists/lhab_13subj.tsv \
---runscript_cmd "python /code/lhab_pipelines/scripts/nii_conversion/run_nii_conversion.py" \
+--runscript_cmd "python /code/lhab_pipelines/scripts/nii_conversion/run_calc_demos.py" \
 -ra "--ds_version 1.0.0.rc1 --pw "$PW \
 -s lhab.conv.public.v1.0.0.rc1.demos -o /data.nfs/LHAB/logfiles/v1.0.0.rc1/logs_public.demos -C 15 -c 2 -N
 
