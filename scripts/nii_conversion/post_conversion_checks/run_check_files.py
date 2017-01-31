@@ -64,7 +64,7 @@ for sub_id in subjects_list:
                     for f in file_list:
                         json_file = f.strip(".nii.gz") + ".json"
                         bids_data = get_json(json_file)
-                        bold_info = pd.DataFrame({"sub_id": sub_id, "ses_id": ses_id, "filename": [json_file],
+                        bold_info = pd.DataFrame({"subject_id": sub_id, "sesssion_id": ses_id, "filename": [json_file],
                                      "scan_duration": [bids_data["ScanDurationSec"]]})
                         scan_duration = scan_duration.append(bold_info)
 
@@ -73,7 +73,7 @@ for sub_id in subjects_list:
 
         df = df.append(pd.DataFrame(n_files))  # , ignore_index=True)
 
-df = df[["sub_id", "ses_id", "dwi" ]]#"T1w", "bold", "dwi", "fmap_bold", "fmap_dwi", "FLAIR"]]
+df = df[["subject_id", "sesssion_id", "dwi" ]]#"T1w", "bold", "dwi", "fmap_bold", "fmap_dwi", "FLAIR"]]
 
 if not os.path.exists(out_dir):
     os.makedirs(out_dir)

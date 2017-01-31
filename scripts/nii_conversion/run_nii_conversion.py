@@ -65,19 +65,7 @@ if __name__ == "__main__":
     else:
         # SUBJECT ID STUFF
         all_sub_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/lhab_all_subjects.tsv")
-        exclude_sub_file = None  # os.path.join(raw_dir,
-        # "00_PRIVATE_sub_lists/tp5_sub_exclude.tsv")
-
-        # get subject and exclude subj list
-        old_sub_id_list = read_tsv(all_sub_file)["sub_id"].tolist()
-
-        try:
-            exclude_sub_id_list = read_tsv(exclude_sub_file)["sub_id"].tolist()
-            for bad in exclude_sub_id_list:
-                old_sub_id_list.remove(bad)
-                print("Removed %s" % bad)
-        except:
-            exclude_sub_id_list = "none"
+        old_sub_id_list = read_tsv(all_sub_file)["subject_id"].tolist()
 
     ###
     ###
