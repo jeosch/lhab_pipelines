@@ -25,6 +25,7 @@ def calc_demos(old_sub_id_list,
                pwd,
                use_new_ids=True,
                new_id_lut_file=None,
+               public_output=True,
                ):
     '''
     use_new_ids: if True, uses new id from mapping file
@@ -62,7 +63,8 @@ def calc_demos(old_sub_id_list,
                     out_acq_time_df = pd.concat((out_acq_time_df, df_acq_time_subject))
 
     to_tsv(out_demo_df, os.path.join(output_dir, "participants.tsv"))
-    to_tsv(df_acq_time_subject, os.path.join(output_dir, "acq_time.tsv"))
+    if not public_output:
+        to_tsv(out_acq_time_df, os.path.join(output_dir, "acq_time.tsv"))
 
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,
@@ -116,9 +118,9 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
     runs conversion for one subject and one modality
     public_output: if True: strips all info about original subject_id, file, date
     """
-    if (public_output and bids_modality=="anat" and not deface):
-        raise Exception("Public output requested, but anatomical images not defaced. exit. %s %s %s"%(
-            old_subject_id, old_ses_id,bids_name))
+    if (public_output and bids_modality == "anat" and not deface):
+        raise Exception("Public output requested, but anatomical images not defaced. exit. %s %s %s" % (
+            old_subject_id, old_ses_id, bids_name))
 
     new_ses_id = get_new_ses_id(old_ses_id)
     bids_ses = "ses-" + new_ses_id
