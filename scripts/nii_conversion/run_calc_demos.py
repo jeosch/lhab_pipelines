@@ -19,6 +19,7 @@ from lhab_pipelines.utils import read_tsv
 from lhab_pipelines.nii_conversion.conversion import calc_demos
 import argparse
 import getpass
+import argparse
 
 
 if __name__ == "__main__":
@@ -30,6 +31,7 @@ if __name__ == "__main__":
                                                 '\n original: output_dir')
     parser.add_argument('--participant_file', help='participants that should be analyzed.'
                                                    'For the conversion wf this should be given as lhab_1234')
+
     parser.add_argument('--no-public_output',
                         help="Don't create public output.\nIf public_output: strips all info about original "
                              "subject_id, file, date \nDefault: use public_output",
@@ -59,13 +61,14 @@ if __name__ == "__main__":
     else:
         raise Exception("No subjects specified")
 
+
     ses_id_list = ["T1", "T2", "T3", "T4", "T5"]
     in_ses_folder = "01_noIF"
     new_id_lut_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/new_sub_id_lut.tsv")
     demo_file = os.path.join(raw_dir, "00_PRIVATE_sub_lists/dob.zip")
 
     #
-    pwd = getpass.getpass("Enter the Password for dob file:")
+    pwd = args.pw #getpass.getpass("Enter the Password for dob file:")
 
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
