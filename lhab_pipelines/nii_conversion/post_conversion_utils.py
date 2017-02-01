@@ -4,8 +4,11 @@ from glob import glob
 
 import pandas as pd
 
-from lhab_pipelines.nii_conversion.utils import get_public_sub_id, get_new_subject_id, get_new_ses_id, fetch_demos
+from lhab_pipelines.nii_conversion.utils import get_public_sub_id, get_private_sub_id, get_clean_subject_id, \
+    get_clean_ses_id, fetch_demos
 from lhab_pipelines.utils import read_protected_file, to_tsv
+from bids.grabbids import BIDSLayout
+from collections import OrderedDict
 
 
 def get_subject_duration(subject):
@@ -24,18 +27,14 @@ def get_subject_duration(subject):
     return duration
 
 
-def calc_session_duration(output_base_dir, ds_version, public_output, use_new_ids):
+def calc_session_duration(output_dir, public_output, use_new_ids):
     """
     looks for subjects in output_dir and checks session durations
     raises Exception if duration is longer 2h
     """
     # privacy settings
-    if not (public_output and use_new_ids):
-        private_str = "_PRIVATE"
-    else:
+    if public_output and use_new_ids:
         raise Exception("cannot calc session duration from non private data.")
-
-    output_dir = os.path.join(output_base_dir, "LHAB_" + ds_version + private_str, "sourcedata")
 
     os.chdir(output_dir)
     subjects_list = glob.glob("sub*")
@@ -55,11 +54,10 @@ def calc_session_duration(output_base_dir, ds_version, public_output, use_new_id
         raise Exception("something with the data is probably off. max duration of %s" % df["duration_minutes"].max())
 
 
-def calc_demos(old_sub_id_list,
+def calc_demos(output_dir,
                ses_id_list,
                raw_dir,
                in_ses_folder,
-               output_dir,
                demo_file,
                pwd,
                use_new_ids=True,
@@ -67,14 +65,20 @@ def calc_demos(old_sub_id_list,
                public_output=True,
                ):
     '''
-    use_new_ids: if True, uses new id from mapping file
+    Calcluates demos from acq_time
     '''
     assert pwd != "", "password empty"
     demo_df = read_protected_file(demo_file, pwd, "demos.txt")
 
     out_demo_df = pd.DataFrame([])
     out_acq_time_df = pd.DataFrame([])
-    for old_subject_id in old_sub_id_list:
+
+    layout = BIDSLayout(output_dir)
+    new_sub_id_list = layout.get_subjects()
+
+    for new_subject_id in new_sub_id_list:
+        old_subject_id = get_private_sub_id(new_subject_id, new_id_lut_file)
+
         for old_ses_id in ses_id_list:
             subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
             os.chdir(subject_ses_folder)
@@ -87,10 +91,10 @@ def calc_demos(old_sub_id_list,
                 os.chdir(abs_subject_folder)
 
                 if use_new_ids:
-                    bids_sub = "sub-" + get_public_sub_id(old_subject_id, new_id_lut_file)
+                    bids_sub = new_subject_id
                 else:
-                    bids_sub = "sub-" + get_new_subject_id(old_subject_id)
-                bids_ses = "ses-" + get_new_ses_id(old_ses_id)
+                    bids_sub = get_clean_subject_id(old_subject_id)
+                bids_ses = get_clean_ses_id(old_ses_id)
 
                 par_file_list = glob(os.path.join(abs_subject_folder, "*.par"))
 
@@ -104,3 +108,39 @@ def calc_demos(old_sub_id_list,
     to_tsv(out_demo_df, os.path.join(output_dir, "participants.tsv"))
     if not public_output:
         to_tsv(out_acq_time_df, os.path.join(output_dir, "acq_time.tsv"))
+
+    print("\n\n\n\nDONE.\nExported demos for %d subjects." % len(new_sub_id_list))
+    print(new_sub_id_list)
+
+
+def get_scan_duration(output_dir, modality="func", task="rest"):
+    """
+
+    """
+    layout = BIDSLayout(output_dir)
+    subjects_list = layout.get_subjects()
+
+    scan_duration = pd.DataFrame([])
+
+    #
+    for sub_id in subjects_list:
+        sub_dir = os.path.join(output_dir, "sub-" + sub_id)
+        ses_id_list = layout.get_sessions(subject=sub_id)
+
+        for ses_id in ses_id_list:
+            sub_ses_path = os.path.join(sub_dir, "ses-" + ses_id)
+            f = layout.get(subject=sub_id, session=ses_id, modality=modality, task=task, extensions='.nii.gz')
+            if len(f) > 1:
+                raise Exception("something went wrong, more than one %s %s file detected: %s" % (modality, task, f))
+            elif len(f) == 1:
+                duration = (layout.get_metadata(f[0].filename)["ScanDurationSec"])
+                scan_duration_sub = pd.DataFrame(OrderedDict([("subject_id", sub_id), ("sesssion_id", ses_id),
+                                                              ("scan_duration_s", [duration])]))
+                scan_duration = scan_duration.append(scan_duration_sub)
+
+    out_str = modality
+    if task:
+        out_str += "_" + task
+    output_file = os.path.join(output_dir, "scan_duration_%s.tsv" % out_str)
+    print("Writing scan duration to %s" % output_file)
+    to_tsv(scan_duration, output_file)
