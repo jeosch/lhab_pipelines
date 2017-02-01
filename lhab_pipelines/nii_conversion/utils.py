@@ -9,12 +9,13 @@ from lhab_pipelines.utils import to_tsv, read_tsv, add_info_to_json
 
 
 # subject and session id related
-def get_new_subject_id(old_subject_id):
+def get_clean_subject_id(old_subject_id):
     "lhab_1234 -> lhab1234"
     return old_subject_id[:4] + old_subject_id[5:]
 
 
-def get_new_ses_id(old_ses_id):
+def get_clean_ses_id(old_ses_id):
+    "T1 -> tp1"
     return "tp" + old_ses_id[1:]
 
 
@@ -29,6 +30,16 @@ def get_public_sub_id(old_sub_id, lut_file):
     else:
         return df.loc[old_sub_id].ix[:, 0].tolist()
 
+def get_private_sub_id(new_sub_id, lut_file):
+    """returns private sub_id of style lhab_0001
+    if new_sub_id is string: returns string
+    if new_sub_id is list: returns list """
+    df = pd.read_csv(lut_file, sep="\t")
+    df = df.set_index("new_id")
+    if isinstance(new_sub_id, str):
+        return df.loc[new_sub_id].values[0]
+    else:
+        return df.loc[new_sub_id].ix[:, 0].tolist()
 
 # BIDS related IO
 def add_additional_bids_parameters_from_par(par_file, bids_file, parameters={"angulation": "Angulation"}):

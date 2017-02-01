@@ -7,7 +7,7 @@ from nipype.interfaces.fsl import Reorient2Std
 
 import lhab_pipelines
 from lhab_pipelines.utils import add_info_to_json
-from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
+from .utils import get_public_sub_id, get_clean_ses_id, get_clean_subject_id, \
     update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, \
     add_flip_angle_from_par, add_total_readout_time_from_par, parse_physio, save_physio
 
@@ -67,12 +67,12 @@ def convert_modality(old_subject_id, old_ses_id, output_dir, bids_name, bids_mod
         raise Exception("Public output requested, but anatomical images not defaced. exit. %s %s %s" % (
             old_subject_id, old_ses_id, bids_name))
 
-    new_ses_id = get_new_ses_id(old_ses_id)
+    new_ses_id = get_clean_ses_id(old_ses_id)
     bids_ses = "ses-" + new_ses_id
     if public_sub_id:
         bids_sub = "sub-" + public_sub_id
     else:
-        bids_sub = "sub-" + get_new_subject_id(old_subject_id)
+        bids_sub = "sub-" + get_clean_subject_id(old_subject_id)
     mapping_file = os.path.join(output_dir, bids_sub, "par2nii_mapping.txt")
 
     par_file_list = glob("*" + search_str + "*.par")
