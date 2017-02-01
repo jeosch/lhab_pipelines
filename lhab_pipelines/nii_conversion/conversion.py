@@ -1,70 +1,15 @@
+import datetime as dt
 import os
 from glob import glob
-import datetime as dt
-from joblib import Parallel, delayed
-import pandas as pd
-
-import lhab_pipelines
-from lhab_pipelines.utils import add_info_to_json, read_protected_file
-from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
-    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, fetch_demos, \
-    add_flip_angle_from_par, add_total_readout_time_from_par, parse_physio, save_physio
-from ..utils import read_tsv, to_tsv
 
 from nipype.interfaces.dcm2nii import Dcm2niix
 from nipype.interfaces.fsl import Reorient2Std
-import datetime as dt
 
-
-def calc_demos(old_sub_id_list,
-               ses_id_list,
-               raw_dir,
-               in_ses_folder,
-               output_dir,
-               demo_file,
-               pwd,
-               use_new_ids=True,
-               new_id_lut_file=None,
-               public_output=True,
-               ):
-    '''
-    use_new_ids: if True, uses new id from mapping file
-    '''
-    assert pwd != "", "password empty"
-    demo_df = read_protected_file(demo_file, pwd, "demos.txt")
-
-    out_demo_df = pd.DataFrame([])
-    out_acq_time_df = pd.DataFrame([])
-    for old_subject_id in old_sub_id_list:
-        for old_ses_id in ses_id_list:
-            subject_ses_folder = os.path.join(raw_dir, old_ses_id, in_ses_folder)
-            os.chdir(subject_ses_folder)
-            subject_folder = sorted(glob(old_subject_id + "*"))
-            assert len(subject_folder) < 2, "more than one subject folder %s" % old_subject_id
-
-            if subject_folder:
-                subject_folder = subject_folder[0]
-                abs_subject_folder = os.path.abspath(subject_folder)
-                os.chdir(abs_subject_folder)
-
-                if use_new_ids:
-                    bids_sub = "sub-" + get_public_sub_id(old_subject_id, new_id_lut_file)
-                else:
-                    bids_sub = "sub-" + get_new_subject_id(old_subject_id)
-                bids_ses = "ses-" + get_new_ses_id(old_ses_id)
-
-                par_file_list = glob(os.path.join(abs_subject_folder, "*.par"))
-
-                if par_file_list:
-                    par_file = par_file_list[0]
-                    df_subject, df_acq_time_subject = fetch_demos(demo_df, old_subject_id, bids_sub, bids_ses,
-                                                                  par_file)
-                    out_demo_df = pd.concat((out_demo_df, df_subject))
-                    out_acq_time_df = pd.concat((out_acq_time_df, df_acq_time_subject))
-
-    to_tsv(out_demo_df, os.path.join(output_dir, "participants.tsv"))
-    if not public_output:
-        to_tsv(out_acq_time_df, os.path.join(output_dir, "acq_time.tsv"))
+import lhab_pipelines
+from lhab_pipelines.utils import add_info_to_json
+from .utils import get_public_sub_id, get_new_ses_id, get_new_subject_id, \
+    update_sub_scans_file, deface_data, dwi_treat_bvecs, add_additional_bids_parameters_from_par, \
+    add_flip_angle_from_par, add_total_readout_time_from_par, parse_physio, save_physio
 
 
 def submit_single_subject(old_subject_id, ses_id_list, raw_dir, in_ses_folder, output_dir, info_list,
