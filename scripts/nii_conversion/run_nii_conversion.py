@@ -131,16 +131,16 @@ if __name__ == "__main__":
     if not os.path.exists(ds_desc_file):
         description = {"Name": "LHAB longitudinal healthy aging brain study",
                        "BIDSVersion": "1.0.0",
-                       "License": "XXXXXX what license is this dataset distributed under? The use of license name "
-                                  "abbreviations is suggested for specifying a license. A list of common licenses"
-                                  " with suggested abbreviations can be found in appendix III.",
-                       "Authors": "XXXXXX List of individuals who contributed to the creation/curation of the dataset",
-                       "Acknowledgements": "XXXXXX who should be acknowledge in helping to collect the data",
-                       "HowToAcknowledge": "XXXXXX Instructions how researchers using this dataset should "
-                                           "acknowledge the original authors. This "
-                                           "field can also be used to define a publication that should be cited in publications that use "
-                                           "the dataset",
-                       "Funding": "XXXXXX sources of funding (grant numbers)",
+                       # "License": "XXXXXX what license is this dataset distributed under? The use of license name "
+                       #            "abbreviations is suggested for specifying a license. A list of common licenses"
+                       #            " with suggested abbreviations can be found in appendix III.",
+                       # "Authors": "XXXXXX List of individuals who contributed to the creation/curation of the dataset",
+                       # "Acknowledgements": "XXXXXX who should be acknowledge in helping to collect the data",
+                       # "HowToAcknowledge": "XXXXXX Instructions how researchers using this dataset should "
+                       #                     "acknowledge the original authors. This "
+                       #                     "field can also be used to define a publication that should be cited in publications that use "
+                       #                     "the dataset",
+                       "Funding": "Velux Stiftung (project No. 369)",
                        "DataSetVersion": args.ds_version}
         add_info_to_json(ds_desc_file, description, create_new=True)
 
