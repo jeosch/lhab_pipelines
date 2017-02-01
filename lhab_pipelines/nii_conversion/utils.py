@@ -19,10 +19,15 @@ def get_new_ses_id(old_ses_id):
 
 
 def get_public_sub_id(old_sub_id, lut_file):
-    "returns public sub_id string of style lhabX0001"
+    """returns public sub_id of style lhabX0001
+    if old_subj_id is string: returns string
+    if old_subj_id is list: returns list """
     df = pd.read_csv(lut_file, sep="\t")
     df = df.set_index("old_id")
-    return df.loc[old_sub_id].values[0]
+    if isinstance(old_sub_id, str):
+        return df.loc[old_sub_id].values[0]
+    else:
+        return df.loc[old_sub_id].ix[:, 0].tolist()
 
 
 # BIDS related IO
@@ -262,6 +267,7 @@ def rotate_vectors(directions, ap, fh, rl, orient):
     directions[:, 1] *= -1
 
     return directions
+
 
 def parse_acq_time(general_info):
     """
