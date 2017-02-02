@@ -1,5 +1,5 @@
 """
-- export demos
+- Export demos
 - Collects scan durations for resting state
 - Checks that all subjects are present and compare par and nii count, export nii count
 - Reduces scans file
