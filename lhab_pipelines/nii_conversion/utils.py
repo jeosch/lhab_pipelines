@@ -41,6 +41,7 @@ def get_private_sub_id(new_sub_id, lut_file):
     else:
         return df.loc[new_sub_id].ix[:, 0].tolist()
 
+
 # BIDS related IO
 def add_additional_bids_parameters_from_par(par_file, bids_file, parameters={"angulation": "Angulation"}):
     header_params = {}
@@ -78,7 +79,7 @@ def update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_fil
     if os.path.exists(scans_file):
         scans = read_tsv(scans_file)
     else:
-        scans = pd.DataFrame([])  # columns=["ses_id", "filename", "acq_time"])
+        scans = pd.DataFrame([])
     scans = scans.append(
         {"participant_id": bids_sub, "session_id": bids_ses,
          "filename": bids_ses + "/" + bids_modality + "/" + out_filename + ".nii.gz",
