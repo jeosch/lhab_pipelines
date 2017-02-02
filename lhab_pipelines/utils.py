@@ -1,14 +1,11 @@
 import json
 import os
-import warnings
-
-# docker stuff
-import pandas as pd
-from bids.grabbids import BIDSLayout
 import zipfile
-from io import StringIO
 from collections import OrderedDict
+from io import StringIO
+
 import numpy
+import pandas as pd
 
 
 def to_tsv(df, filename, header=True):
@@ -42,18 +39,6 @@ def add_info_to_json(bids_file, new_info, create_new=False):
 
     with open(bids_file, "w") as fi:
         json.dump(OrderedDict(sorted(bids_data.items())), fi, indent=4)
-
-
-def reduce_sub_files(bids_dir, output_file, sub_file):
-    df = pd.DataFrame([])
-    layout = BIDSLayout(bids_dir)
-    files = layout.get(extensions=sub_file)
-    for file in [f.filename for f in files]:
-        print(file)
-        df_ = read_tsv(file)
-        df = pd.concat((df, df_))
-
-    to_tsv(df, os.path.join(bids_dir, output_file))
 
 
 def read_protected_file(zfile, pwd, datafile):
