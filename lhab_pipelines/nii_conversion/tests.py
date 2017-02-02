@@ -40,3 +40,32 @@ def test_get_public_sub_id():
     os.chdir(data_path)
     new_id = utils.get_public_sub_id("lhab_abc2", "lut_test.tsv")
     assert (new_id == "lhabX0003"), "Test failed"
+
+
+def test_get_public_sub_id_list():
+    """test get_public_sub_id from list"""
+    data_path = os.path.join(os.path.dirname(utils.__file__), 'test_data')
+    os.chdir(data_path)
+    new_id = utils.get_public_sub_id(["lhab_abc1", "lhab_abc2"], "lut_test.tsv")
+    assert (new_id == ["lhabX0001","lhabX0003"]), "Test failed"
+
+def test_get_private_sub_id():
+    """test get_private_sub_id"""
+    data_path = os.path.join(os.path.dirname(utils.__file__), 'test_data')
+    os.chdir(data_path)
+    new_id = utils.get_private_sub_id("lhabX0001", "lut_test.tsv")
+    assert (new_id == "lhab_abc1"), "Test failed"
+
+def test_get_private_sub_id_list():
+    """test get_private_sub_id from list"""
+    data_path = os.path.join(os.path.dirname(utils.__file__), 'test_data')
+    os.chdir(data_path)
+    new_id = utils.get_private_sub_id(["lhabX0001","lhabX0003"], "lut_test.tsv")
+    assert (new_id == ["lhab_abc1", "lhab_abc2"]), "Test failed"
+
+def test_get_private_public_sub_id_list():
+    """back and forth"""
+    data_path = os.path.join(os.path.dirname(utils.__file__), 'test_data')
+    os.chdir(data_path)
+    new_id = utils.get_public_sub_id(utils.get_private_sub_id(["lhabX0001","lhabX0003"], "lut_test.tsv"), "lut_test.tsv")
+    assert (new_id == ["lhabX0001","lhabX0003"]), "Test failed"

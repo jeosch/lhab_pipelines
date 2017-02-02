@@ -9,20 +9,37 @@ from lhab_pipelines.utils import to_tsv, read_tsv, add_info_to_json
 
 
 # subject and session id related
-def get_new_subject_id(old_subject_id):
+def get_clean_subject_id(old_subject_id):
     "lhab_1234 -> lhab1234"
     return old_subject_id[:4] + old_subject_id[5:]
 
 
-def get_new_ses_id(old_ses_id):
+def get_clean_ses_id(old_ses_id):
+    "T1 -> tp1"
     return "tp" + old_ses_id[1:]
 
 
 def get_public_sub_id(old_sub_id, lut_file):
-    "returns public sub_id string of style lhabX0001"
+    """returns public sub_id of style lhabX0001
+    if old_subj_id is string: returns string
+    if old_subj_id is list: returns list """
     df = pd.read_csv(lut_file, sep="\t")
     df = df.set_index("old_id")
-    return df.loc[old_sub_id].values[0]
+    if isinstance(old_sub_id, str):
+        return df.loc[old_sub_id].values[0]
+    else:
+        return df.loc[old_sub_id].ix[:, 0].tolist()
+
+def get_private_sub_id(new_sub_id, lut_file):
+    """returns private sub_id of style lhab_0001
+    if new_sub_id is string: returns string
+    if new_sub_id is list: returns list """
+    df = pd.read_csv(lut_file, sep="\t")
+    df = df.set_index("new_id")
+    if isinstance(new_sub_id, str):
+        return df.loc[new_sub_id].values[0]
+    else:
+        return df.loc[new_sub_id].ix[:, 0].tolist()
 
 
 # BIDS related IO
@@ -62,7 +79,7 @@ def update_sub_scans_file(output_dir, bids_sub, bids_ses, bids_modality, out_fil
     if os.path.exists(scans_file):
         scans = read_tsv(scans_file)
     else:
-        scans = pd.DataFrame([])  # columns=["ses_id", "filename", "acq_time"])
+        scans = pd.DataFrame([])
     scans = scans.append(
         {"participant_id": bids_sub, "session_id": bids_ses,
          "filename": bids_ses + "/" + bids_modality + "/" + out_filename + ".nii.gz",
@@ -262,6 +279,7 @@ def rotate_vectors(directions, ap, fh, rl, orient):
     directions[:, 1] *= -1
 
     return directions
+
 
 def parse_acq_time(general_info):
     """
