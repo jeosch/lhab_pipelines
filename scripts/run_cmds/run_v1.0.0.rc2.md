@@ -51,3 +51,14 @@ docker run --rm -ti \
 fliem/lhab_pipelines:${swv} python /code/lhab_pipelines/scripts/nii_conversion/run_post_conversion_routines.py /data/in /data/out --participant_file /data/in/00_PRIVATE_sub_lists/${sfile} --ds_version ${dsv} --no-public_output
 ```
 
+
+#
+
+## freesurfer
+dsv=v1.0.0.rc2
+screen python /data.nfs/code/bidswrapps/bidswrapps.py \
+bids/freesurfer:v6.0.0-2 \
+/data.nfs/LHAB/NIFTI/LHAB_${dsv}/sourcedata/ /data.nfs/LHAB/NIFTI/LHAB_${dsv}/derivates/freesurfer participant \
+-ra "--license_key xx " \
+-s lhab.freesurfer.${dsv} -o /data.nfs/LHAB/logfiles/freesurfer_${dsv} -w 60hours -C 15 -c 8
+
