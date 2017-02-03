@@ -107,7 +107,7 @@ if __name__ == "__main__":
          "add_info": {**general_info}},
 
         # dwi
-        {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True, "direction": "ap",
+        {"bids_name": "dwi", "bids_modality": "dwi", "search_str": "_dti_T", "only_use_last": True, "acq": "ap",
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}},
 
         # func
@@ -115,11 +115,11 @@ if __name__ == "__main__":
          "add_info": {**general_info, **sense_info, **rs_info, "PhaseEncodingDirection": "j-"}},
 
         # fieldmaps
-        {"bids_name": "bold", "bids_modality": "fmap", "search_str": "_fmri_pa_T", "direction": "pa",
+        {"bids_name": "bold", "bids_modality": "fmap", "search_str": "_fmri_pa_T", "acq": "pa",
          "add_info": {**general_info, **sense_info, **rs_info, "PhaseEncodingDirection": "j"}},
-        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_pa_T", "direction": "pa",
+        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_pa_T", "acq": "pa",
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j"}},
-        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "direction": "ap",
+        {"bids_name": "dwi", "bids_modality": "fmap", "search_str": "_dti_ap_T", "acq": "ap",
          "add_info": {**general_info, **sense_info, "PhaseEncodingDirection": "j-"}}
     ]
 
