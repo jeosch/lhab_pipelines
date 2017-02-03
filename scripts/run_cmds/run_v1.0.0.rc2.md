@@ -3,8 +3,8 @@
 performs the parrec 2 nifti conversion (on sc)
 
 ```
-swv=v1.0.0.rc3
-dsv=v1.0.0.rc2
+swv=v1.0.0.rc5
+dsv=v1.0.0.rc3
 sfile=lhab_13subj.tsv
 
 screen python `which bidswrapps_start.py` \
@@ -13,7 +13,7 @@ fliem/lhab_pipelines:${swv} \
 -pf /data.nfs/LHAB/01_RAW/00_PRIVATE_sub_lists/${sfile} \
 --runscript_cmd "python /code/lhab_pipelines/scripts/nii_conversion/run_nii_conversion.py" \
 -ra "--no-public_output --ds_version ${dsv}" \
--s cloudsessions/lhab.conv.private.${swv} -o /data.nfs/LHAB/logfiles/${swv}/logs_private -C 15 -c 2
+-s cloudsessions/lhab.conv.private.${swv} -o /data.nfs/LHAB/logfiles/${swv}/logs_private -C 15 -c 1
 
 
 screen python `which bidswrapps_start.py` \
@@ -22,7 +22,7 @@ fliem/lhab_pipelines:${swv} \
 -pf /data.nfs/LHAB/01_RAW/00_PRIVATE_sub_lists/${sfile} \
 --runscript_cmd "python /code/lhab_pipelines/scripts/nii_conversion/run_nii_conversion.py" \
 -ra "--ds_version ${dsv}" \
--s cloudsessions/lhab.conv.public.${dsv} -o /data.nfs/LHAB/logfiles/${dsv}/logs_public -C 15 -c 2
+-s cloudsessions/lhab.conv.public.${dsv} -o /data.nfs/LHAB/logfiles/${dsv}/logs_public -C 15 -c 1
 
 
 ```
@@ -34,8 +34,8 @@ fliem/lhab_pipelines:${swv} \
 checks data and reduces subjects data
 
 ```
-swv=v1.0.0.rc3
-dsv=v1.0.0.rc2
+swv=v1.0.0.rc5
+dsv=v1.0.0.rc3
 sfile=lhab_13subj.tsv
 
 docker run --rm -ti \
@@ -56,7 +56,7 @@ fliem/lhab_pipelines:${swv} python /code/lhab_pipelines/scripts/nii_conversion/r
 
 ## freesurfer
 ```
-dsv=v1.0.0.rc2
+dsv=v1.0.0.rc3
 screen python `which bidswrapps_start.py` \
 bids/freesurfer:v6.0.0-2 \
 /data.nfs/LHAB/NIFTI/LHAB_${dsv}/sourcedata/ /data.nfs/LHAB/NIFTI/LHAB_${dsv}/derivates/freesurfer participant \
