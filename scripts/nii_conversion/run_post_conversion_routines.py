@@ -49,7 +49,7 @@ if __name__ == "__main__":
 
     ###
     if args.participant_file:
-        old_sub_id_list = read_tsv(args.participant_file)["subject_id"].tolist()
+        old_sub_id_list = read_tsv(args.participant_file, no_header=True).ix[:,0].tolist()
     else:
         raise Exception("No subjects specified")
 

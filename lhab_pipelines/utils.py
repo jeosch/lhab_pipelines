@@ -12,8 +12,11 @@ def to_tsv(df, filename, header=True):
     df.to_csv(filename, sep="\t", index=False, header=header)
 
 
-def read_tsv(filename):
-    return pd.read_csv(filename, sep="\t")
+def read_tsv(filename, no_header=False):
+    if no_header:
+        return pd.read_csv(filename, sep="\t", header=None)
+    else:
+        return pd.read_csv(filename, sep="\t")
 
 
 def get_json(bids_file):
