@@ -7,22 +7,22 @@ swv=v1.0.0.rc2
 dsv=v1.0.0.rc2
 sfile=lhab_13subj.tsv
 
-screen python /data.nfs/code/bidswrapps/bidswrapps.py \
+screen python `which bidswrapps_start.py` \
 fliem/lhab_pipelines:${swv} \
 /data.nfs/LHAB/01_RAW /data.nfs/LHAB/NIFTI participant \
 -pf /data.nfs/LHAB/01_RAW/00_PRIVATE_sub_lists/${sfile} \
 --runscript_cmd "python /code/lhab_pipelines/scripts/nii_conversion/run_nii_conversion.py" \
 -ra "--no-public_output --ds_version ${dsv}" \
--s lhab.conv.private.${swv} -o /data.nfs/LHAB/logfiles/${swv}/logs_private -C 15 -c 2
+-s cloudsessions/lhab.conv.private.${swv} -o /data.nfs/LHAB/logfiles/${swv}/logs_private -C 15 -c 2
 
 
-screen python /data.nfs/code/bidswrapps/bidswrapps.py \
+screen python `which bidswrapps_start.py` \
 fliem/lhab_pipelines:${swv} \
 /data.nfs/LHAB/01_RAW /data.nfs/LHAB/NIFTI participant \
 -pf /data.nfs/LHAB/01_RAW/00_PRIVATE_sub_lists/${sfile} \
 --runscript_cmd "python /code/lhab_pipelines/scripts/nii_conversion/run_nii_conversion.py" \
 -ra "--ds_version ${dsv}" \
--s lhab.conv.public.${dsv} -o /data.nfs/LHAB/logfiles/${dsv}/logs_public -C 15 -c 2
+-s cloudsessions/lhab.conv.public.${dsv} -o /data.nfs/LHAB/logfiles/${dsv}/logs_public -C 15 -c 2
 
 
 ```
@@ -55,10 +55,12 @@ fliem/lhab_pipelines:${swv} python /code/lhab_pipelines/scripts/nii_conversion/r
 #
 
 ## freesurfer
+```
 dsv=v1.0.0.rc2
-screen python /data.nfs/code/bidswrapps/bidswrapps.py \
+screen python `which bidswrapps_start.py` \
 bids/freesurfer:v6.0.0-2 \
 /data.nfs/LHAB/NIFTI/LHAB_${dsv}/sourcedata/ /data.nfs/LHAB/NIFTI/LHAB_${dsv}/derivates/freesurfer participant \
--ra "--license_key xx " \
--s lhab.freesurfer.${dsv} -o /data.nfs/LHAB/logfiles/freesurfer_${dsv} -w 60hours -C 15 -c 8
+-ra "--license_key xx --n_cpus 8" \
+-s cloudsessions/lhab.freesurfer.${dsv} -o /data.nfs/LHAB/logfiles/freesurfer_${dsv} -w 60hours -C 15 -c 8
 
+```
