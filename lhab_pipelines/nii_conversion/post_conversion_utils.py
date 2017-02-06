@@ -218,6 +218,12 @@ def compare_par_nii(output_dir, old_sub_id_list, raw_dir, ses_id_list, in_ses_fo
                         acq_str.replace("-", "") + dir_str.replace("-", "") + "_physio"
                     n_files[c] = [phys_n_files_nifti]
 
+                    if not phys_n_files_par == phys_n_files_nifti:
+                        raise Exception(
+                            "missmatch between par and nii file count %s %s %s %s" % (new_sub_id, new_ses_id,
+                                                                                      phys_par_search_str,
+                                                                                      phys_nii_search_str))
+
             filecount = filecount.append(pd.DataFrame(n_files))
 
     output_file = os.path.join(output_dir, "n_files.tsv")
